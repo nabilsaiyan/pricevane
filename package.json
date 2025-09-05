@@ -1,0 +1,46 @@
+{
+  "name": "pricevane",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Competitor price and catalog monitoring. Multi-tenant SaaS with Postgres RLS isolation, LLM product matching, and scheduled Playwright crawlers.",
+  "author": "Nabil Amhaouch <nabil.amhaouch.dev@gmail.com> (https://nabilamhaouch.dev)",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:rls": "vitest run tests/rls",
+    "db:push": "supabase db push",
+    "db:reset": "supabase db reset",
+    "stripe:listen": "stripe listen --forward-to localhost:3000/api/webhooks/stripe"
+  },
+  "dependencies": {
+    "@stripe/stripe-js": "^9.14.0",
+    "@supabase/ssr": "^0.12.5",
+    "@supabase/supabase-js": "^2.112.4",
+    "gsap": "^3.15.0",
+    "lucide-react": "^1.37.0",
+    "motion": "^13.1.1",
+    "next": "^16.3.3",
+    "react": "^19.2.4",
+    "react-dom": "^19.2.4",
+    "resend": "^6.25.0",
+    "stripe": "^22.6.0",
+    "zod": "^4.5.4"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4.3.3",
+    "@types/node": "^22.0.0",
+    "@types/pg": "^8.20.0",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "dotenv": "^17.2.3",
+    "pg": "^8.23.0",
+    "tailwindcss": "^4.3.3",
+    "tsx": "^4.23.13",
+    "typescript": "^5.8.0",
+    "vitest": "^4.1.11"
+  }
+}
