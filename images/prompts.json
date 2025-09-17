@@ -1,0 +1,64 @@
+{
+  "sortie": "public/products",
+  "produits": [
+    {
+      "id": "01",
+      "nom": "ErgoMesh",
+      "dossier": "01 - ErgoMesh",
+      "images": [
+        {
+          "fichier": "chair-ergomesh",
+          "role": "principale",
+          "sujet": "Ergonomic mesh office chair",
+          "prompt": "Photorealistic studio product photograph of a modern ergonomic office chair, three-quarter front view, isolated on a seamless very dark charcoal grey background (near black, around #0F1112). The chair has a black woven mesh backrest stretched over a matte black frame, a moulded dark grey fabric seat cushion, thin adjustable armrests in matte black, a chrome gas cylinder, and a five-star matte black nylon base with one small black castor at the end of each of the five arms. Lighting is soft and directional from the upper left, a gentle rim light along the right edge of the backrest separating it from the background, and a soft contact shadow directly beneath the base where the castors meet the floor. Commercial catalogue quality, sharp focus throughout, shallow vignette. No people, no hands, no text, no logo, no watermark, no caption band, no overlay, no props, nothing else in frame."
+        },
+        {
+          "fichier": "chair-ergomesh-rival",
+          "role": "declinaison",
+          "chaine": "chair-ergomesh",
+          "sujet": "The same chair as a competitor would photograph it",
+          "prompt": "Photorealistic studio product photograph of EXACTLY the same ergonomic office chair as the attached reference image — same black woven mesh backrest, same matte black frame, same dark grey moulded seat cushion, same thin black armrests, same chrome gas cylinder, same five-star matte black base with five castors. Re-photograph that identical chair from a different camera position: a rear three-quarter view from the right side, so the back of the mesh and the right armrest face the camera. Change the lighting to a cooler, flatter key light from the upper right with a weaker fill, giving softer highlights and a longer contact shadow falling to the left. Seamless very dark charcoal grey background, near black, around #0F1112. The chair itself must be unchanged in shape, colour, proportion and material — only the angle and the lighting differ. Commercial catalogue quality, sharp focus. No people, no hands, no text, no logo, no watermark, no caption band, no overlay, no props, nothing else in frame."
+        }
+      ]
+    },
+    {
+      "id": "02",
+      "nom": "Standing Desk",
+      "dossier": "02 - Desk",
+      "images": [
+        {
+          "fichier": "desk-standing",
+          "role": "principale",
+          "sujet": "Height adjustable standing desk",
+          "prompt": "Photorealistic studio product photograph of a height-adjustable standing desk, three-quarter view from the front left, isolated on a seamless very dark charcoal grey background (near black, around #0F1112). The desk has a rectangular light oak veneer top with a thin squared edge, and a matte black powder-coated steel frame: two rectangular telescopic columns, each sitting on a flat black foot rail resting on the floor, joined by a horizontal black crossbeam beneath the top. The desk is raised to standing height. Lighting is soft and directional from the upper left, showing the warm grain of the oak, with a soft contact shadow under each foot rail. Commercial catalogue quality, sharp focus. No people, no chair, no computer, no text, no logo, no watermark, no caption band, no overlay, nothing else in frame."
+        }
+      ]
+    },
+    {
+      "id": "03",
+      "nom": "Oak Shelf",
+      "dossier": "03 - Shelf",
+      "images": [
+        {
+          "fichier": "shelf-oak",
+          "role": "principale",
+          "sujet": "Five tier oak shelf unit",
+          "prompt": "Photorealistic studio product photograph of a five-tier open shelving unit, straight-on front view slightly angled to the left, isolated on a seamless very dark charcoal grey background (near black, around #0F1112). The unit has five horizontal solid light oak shelves of equal spacing held in a slim matte black square-section steel frame, open on all sides with no backing panel. The shelves are empty. Lighting is soft and directional from the upper left, warm on the oak, with a soft contact shadow beneath the frame feet. Commercial catalogue quality, sharp focus front to back. No people, no books, no plants, no objects on the shelves, no text, no logo, no watermark, no caption band, no overlay, nothing else in frame."
+        }
+      ]
+    },
+    {
+      "id": "04",
+      "nom": "Brass Lamp",
+      "dossier": "04 - Lamp",
+      "images": [
+        {
+          "fichier": "lamp-brass",
+          "role": "principale",
+          "sujet": "Brass desk lamp",
+          "prompt": "Photorealistic studio product photograph of an adjustable desk lamp, three-quarter view, isolated on a seamless very dark charcoal grey background (near black, around #0F1112). The lamp has a solid round weighted base in brushed brass, a slim brass upright stem with a single pivoting joint at mid height, and a cone-shaped brass shade angled down and to the left. The lamp is switched off. Lighting is soft studio light from the upper left with warm specular highlights running along the brass stem and the curved edge of the shade, and a soft contact shadow under the round base. Commercial catalogue quality, sharp focus. No people, no desk, no text, no logo, no watermark, no caption band, no overlay, nothing else in frame."
+        }
+      ]
+    }
+  ]
+}
