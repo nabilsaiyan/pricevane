@@ -51,6 +51,7 @@ beforeAll(async () => {
   await root.query(sql('tests/rls/fixtures/supabase-shim.sql'))
   await root.query(sql('supabase/migrations/0001_multitenant_foundation.sql'))
   await root.query(sql('supabase/migrations/0002_rls_policies.sql'))
+  await root.query(sql('supabase/migrations/0003_usage_limits.sql'))
 
   const one = async (q: string, v: unknown[] = []) => (await root.query(q, v)).rows[0]
 

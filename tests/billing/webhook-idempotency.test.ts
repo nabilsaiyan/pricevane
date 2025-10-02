@@ -59,6 +59,7 @@ beforeAll(async () => {
   await pool.query(sql('tests/rls/fixtures/supabase-shim.sql'))
   await pool.query(sql('supabase/migrations/0001_multitenant_foundation.sql'))
   await pool.query(sql('supabase/migrations/0002_rls_policies.sql'))
+  await pool.query(sql('supabase/migrations/0003_usage_limits.sql'))
 })
 
 afterAll(async () => { await pool?.end() })
