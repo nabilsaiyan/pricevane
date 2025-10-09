@@ -18,3 +18,6 @@ npm-debug.log*
 coverage/
 .venv/
 __pycache__/
+
+# Image generation run log — regenerated on each run, not source
+images/journal.json
