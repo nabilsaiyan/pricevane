@@ -4,6 +4,9 @@ import { NextResponse, type NextRequest } from 'next/server'
 /**
  * Refreshes the Supabase session cookie on every matched request.
  *
+ * Named proxy.ts, not middleware.ts: Next 16 deprecated the middleware file
+ * convention and warns on every build until you move.
+ *
  * Without this, an expired access token is only noticed inside a page render,
  * where cookies are read-only, and the user is bounced to sign-in mid-session.
  *
@@ -11,7 +14,7 @@ import { NextResponse, type NextRequest } from 'next/server'
  * experience; the boundary is RLS. A request that slips past this middleware
  * still cannot read another tenant's rows.
  */
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   let response = NextResponse.next({ request })
 
   const supabase = createServerClient(
