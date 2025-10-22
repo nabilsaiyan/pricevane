@@ -1,0 +1,16 @@
+.authwrap{min-height:100svh;display:grid;place-items:center;padding:1.5rem;background:var(--ink)}
+.authcard{width:100%;max-width:380px;background:var(--s1);border:1px solid var(--rule2);
+  border-radius:6px;padding:1.8rem}
+.brandline{font-family:var(--fm);font-size:11px;letter-spacing:.26em;text-transform:uppercase;
+  color:var(--t1);display:block;margin-bottom:1.6rem}
+.brandline b{color:var(--lime);font-weight:400}
+.authcard h1{font-size:1.85rem;font-variation-settings:'wdth' 118,'wght' 700;letter-spacing:-.035em}
+.note{color:var(--t2);font-size:13px;margin:.55rem 0 1.4rem;line-height:1.5}
+.lbl{font-family:var(--fm);font-size:9.5px;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--t3);display:block;margin-bottom:.4rem}
+.inp{width:100%;background:var(--ink);border:1px solid var(--rule2);border-radius:4px;
+  padding:.65rem .75rem;color:var(--t1);font-family:var(--fb);font-size:14px;margin-bottom:1rem}
+.inp:focus{outline:none;border-color:var(--lime)}
+.btn3{width:100%;background:var(--lime);color:#08090A;border:0;padding:.7rem;border-radius:3px;
+  font-family:var(--fb);font-size:13.5px;font-weight:700;cursor:pointer}
+.btn3:focus-visible{outline:2px solid var(--t1);outline-offset:2px}

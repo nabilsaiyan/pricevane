@@ -1,0 +1,97 @@
+import { getSupabaseServer } from '@/lib/supabase/server'
+
+/**
+ * Every query here omits organization_id. That is not an oversight — RLS
+ * supplies the tenant boundary, so a query that forgets it returns nothing
+ * rather than everything. Passing it as well would be belt-and-braces that
+ * hides which layer is actually doing the work.
+ */
+
+export type UsageSummary = {
+  organization_id: string; tier: string; status: string
+  max_tracked_products: number; max_competitor_stores: number; checks_per_day: number
+  tracked_products: number; active_stores: number
+}
+
+export async function getUsage(): Promise<UsageSummary | null> {
+  const s = await getSupabaseServer()
+  const { data } = await s.from('usage_summary').select('*').maybeSingle()
+  return data as UsageSummary | null
+}
+
+export async function getOverview() {
+  const s = await getSupabaseServer()
+  const since = new Date(Date.now() - 30 * 86_400_000).toISOString()
+
+  const [alerts, unread, stores, lastRun] = await Promise.all([
+    s.from('alerts').select('id, kind, severity, title, created_at, old_price_cents, new_price_cents')
+      .order('created_at', { ascending: false }).limit(8),
+    s.from('alerts').select('id', { count: 'exact', head: true }).is('read_at', null),
+    s.from('competitor_stores').select('id, name, domain, is_active'),
+    s.from('crawl_runs').select('id, status, started_at, finished_at, listings_seen')
+      .gte('started_at', since).order('started_at', { ascending: false }).limit(1),
+  ])
+
+  return {
+    alerts: alerts.data ?? [],
+    unreadAlerts: unread.count ?? 0,
+    stores: stores.data ?? [],
+    lastRun: lastRun.data?.[0] ?? null,
+  }
+}
+
+export async function getProducts(q?: string) {
+  const s = await getSupabaseServer()
+  let query = s.from('products')
+    .select('id, sku, title, brand, our_price_cents, is_tracked, image_url')
+    .order('title')
+  if (q?.trim()) query = query.ilike('title', `%${q.trim()}%`)
+  const { data } = await query.limit(200)
+  return data ?? []
+}
+
+/** One product, its confirmed rivals, and every snapshot for the window. */
+export async function getProductHistory(productId: string, days = 182) {
+  const s = await getSupabaseServer()
+  const since = new Date(Date.now() - days * 86_400_000).toISOString()
+
+  const { data: product } = await s.from('products')
+    .select('id, sku, title, brand, our_price_cents, image_url')
+    .eq('id', productId).maybeSingle()
+  if (!product) return null
+
+  const { data: matches } = await s.from('product_matches')
+    .select('listing_id, status, confidence, competitor_listings(id, title, url, store_id, competitor_stores(name))')
+    .eq('product_id', productId).eq('status', 'confirmed')
+
+  const listingIds = (matches ?? []).map(m => m.listing_id)
+  const { data: snaps } = listingIds.length
+    ? await s.from('price_snapshots')
+        .select('listing_id, price_cents, stock, captured_at')
+        .in('listing_id', listingIds).gte('captured_at', since)
+        .order('captured_at')
+    : { data: [] }
+
+  return { product, matches: matches ?? [], snapshots: snaps ?? [] }
+}
+
+export async function getReviewQueue() {
+  const s = await getSupabaseServer()
+  const { data } = await s.from('product_matches')
+    .select(`id, confidence, reason, model, status,
+             products(id, sku, title, brand, our_price_cents, image_url),
+             competitor_listings(id, title, url, brand, image_url, competitor_stores(name))`)
+    .eq('status', 'proposed')
+    .order('confidence', { ascending: false })
+    .limit(50)
+  return data ?? []
+}
+
+export async function getAlerts() {
+  const s = await getSupabaseServer()
+  const { data } = await s.from('alerts')
+    .select(`id, kind, severity, title, body, created_at, read_at,
+             old_price_cents, new_price_cents, products(id, title, sku)`)
+    .order('created_at', { ascending: false }).limit(100)
+  return data ?? []
+}
