@@ -1,0 +1,40 @@
+/* Deliberately ordinary shop styling. These pages exist to be parsed, not
+   admired — if they looked like the product, screenshots would confuse the two. */
+*{box-sizing:border-box}
+body{margin:0;font:15px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;
+  background:var(--ground,#fff);color:var(--ink,#111)}
+a{color:inherit}
+.wrap{max-width:1080px;margin:0 auto;padding:0 20px}
+.masthead{border-bottom:1px solid rgba(0,0,0,.12);padding:18px 0;margin-bottom:28px}
+.masthead .row{display:flex;justify-content:space-between;align-items:baseline;gap:16px;flex-wrap:wrap}
+.masthead h1{margin:0;font-size:20px;letter-spacing:-.02em}
+.masthead p{margin:2px 0 0;font-size:13px;opacity:.62}
+.masthead nav{font-size:13px;display:flex;gap:14px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:22px;padding-bottom:48px}
+.card{border:1px solid rgba(0,0,0,.1);border-radius:6px;overflow:hidden;background:#fff;
+  text-decoration:none;display:block}
+.card:hover{border-color:rgba(0,0,0,.28)}
+.card .ph{aspect-ratio:4/3;background:#EDEBE6;display:grid;place-items:center;
+  font-size:11px;letter-spacing:.1em;text-transform:uppercase;opacity:.4}
+.card .body{padding:12px 14px}
+.card h2{margin:0 0 6px;font-size:14px;font-weight:600;line-height:1.35}
+.price{font-size:17px;font-weight:700;font-variant-numeric:tabular-nums}
+.stock{font-size:12px;margin-top:4px}
+.in{color:#177245}.out{color:#9B2C2C}
+.pdp{display:grid;grid-template-columns:1fr 1fr;gap:40px;padding-bottom:60px}
+@media(max-width:760px){.pdp{grid-template-columns:1fr}}
+.pdp .ph{aspect-ratio:4/3;background:#EDEBE6;border-radius:6px;display:grid;place-items:center;
+  font-size:11px;letter-spacing:.1em;text-transform:uppercase;opacity:.4}
+.pdp h1{margin:0 0 10px;font-size:26px;letter-spacing:-.02em;line-height:1.15}
+.pdp .price{font-size:28px;margin:14px 0 6px}
+.pdp dl{display:grid;grid-template-columns:auto 1fr;gap:6px 18px;font-size:13px;margin:22px 0 0}
+.pdp dt{opacity:.55}
+.pdp dd{margin:0;font-variant-numeric:tabular-nums}
+.buy{margin-top:22px;padding:11px 22px;border:0;border-radius:4px;color:#fff;
+  background:var(--accent,#333);font-size:14px;font-weight:600;cursor:not-allowed;opacity:.85}
+.disclaimer{border-top:1px solid rgba(0,0,0,.1);padding:16px 20px;font-size:12px;opacity:.6;
+  text-align:center}
+.storelist{display:grid;gap:12px;padding:40px 0}
+.storelist a{border:1px solid rgba(0,0,0,.12);border-radius:6px;padding:16px 18px;
+  text-decoration:none;display:block}
+.storelist a:hover{border-color:rgba(0,0,0,.3)}
