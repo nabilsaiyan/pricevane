@@ -21,3 +21,6 @@ __pycache__/
 
 # Image generation run log — regenerated on each run, not source
 images/journal.json
+
+# Python crawler environment
+crawlers/.venv/
