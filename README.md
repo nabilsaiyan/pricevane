@@ -113,7 +113,8 @@ scraping someone else's shop.
 ## Stack
 
 Next.js 16 (App Router) · TypeScript · Tailwind 4 · Supabase (Postgres, Auth,
-Storage) · Stripe · GSAP 3.15 + ScrollTrigger · Python + Playwright for crawlers.
+Storage) · Stripe · GSAP 3.15 + ScrollTrigger · Python 3.14 + Playwright for
+crawlers (`crawlers/README.md`) · three fictional storefronts (`storefronts/`).
 
 ## Running it
 
@@ -137,15 +138,21 @@ npm test
 | Phase | | |
 |---|---|---|
 | 1 | Multi-tenant foundation — schema, RLS, roles, invitations, isolation test | done |
-| 2 | Fictional competitor storefronts | next |
-| 3 | Crawler pipeline | |
-| 4 | Dashboard | |
-| 5 | LLM product matching | |
-| 6 | Stripe tiers, usage limits, full lifecycle | webhook core done |
-| 7 | Alerts — rules, email, Slack, webhook | |
-| 8 | Landing page choreography | design approved, ported |
-| 9 | `/architecture` page and seeded demo orgs | |
-| 10 | Performance, accessibility, reduced-motion pass | |
+| 2 | Fictional competitor storefronts | done |
+| 3 | Crawler pipeline | done |
+| 4 | Dashboard — overview, products, price history, matches, alerts, billing | done |
+| 5 | LLM product matching with the confirmation flow | done |
+| 6 | Stripe tiers, usage limits, webhook lifecycle | done |
+| 7 | Alerts — rules, email, Slack, webhook | done |
+| 8 | Landing page choreography | done |
+| 9 | `/architecture` page and seeded demo data | done |
+| 10 | Performance, accessibility and reduced-motion pass | outstanding |
+
+Not yet wired to live infrastructure: a Supabase project, a Stripe test account,
+and deployment. `.env.example` documents every variable, and the Stripe names
+match Cartello's so the same test keys drop straight in.
+
+51 tests, all against a real Postgres 17 in Docker rather than mocks.
 
 ## Licence notes
 
