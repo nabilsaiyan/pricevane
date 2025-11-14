@@ -1,6 +1,7 @@
 import { cache } from 'react'
 import { getSupabaseServer } from '@/lib/supabase/server'
 import { cookies } from 'next/headers'
+import { isSupabaseConfigured } from '@/lib/supabase/config'
 
 export type Role = 'owner' | 'admin' | 'member'
 
@@ -19,6 +20,7 @@ const ACTIVE_ORG_COOKIE = 'pv_org'
  * the caller's own memberships. `cache` dedupes this across a render tree.
  */
 export const getMemberships = cache(async (): Promise<Membership[]> => {
+  if (!isSupabaseConfigured()) return []
   const supabase = await getSupabaseServer()
   const { data, error } = await supabase
     .from('memberships')

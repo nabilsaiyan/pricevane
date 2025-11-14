@@ -1,6 +1,8 @@
 import { redirect } from 'next/navigation'
 import { getSupabaseServer, getUser } from '@/lib/supabase/server'
 import { getMemberships } from '@/lib/auth/org'
+import { isSupabaseConfigured } from '@/lib/supabase/config'
+import { SetupNotice } from '@/components/app/SetupNotice'
 import '../sign-in/auth.css'
 
 export const dynamic = 'force-dynamic'
@@ -26,6 +28,7 @@ async function createOrg(formData: FormData) {
 }
 
 export default async function Onboarding() {
+  if (!isSupabaseConfigured()) return <SetupNotice />
   if (!await getUser()) redirect('/sign-in')
   if ((await getMemberships()).length > 0) redirect('/app')
 

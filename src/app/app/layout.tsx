@@ -2,6 +2,8 @@ import Link from 'next/link'
 import { redirect } from 'next/navigation'
 import { LayoutDashboard, Package, Store, GitCompareArrows, Bell, CreditCard, ShieldCheck } from 'lucide-react'
 import { getMemberships, getActiveOrg } from '@/lib/auth/org'
+import { isSupabaseConfigured } from '@/lib/supabase/config'
+import { SetupNotice } from '@/components/app/SetupNotice'
 import { OrgSwitcher } from '@/components/app/OrgSwitcher'
 import './app.css'
 
@@ -15,6 +17,8 @@ const NAV = [
 ] as const
 
 export default async function AppLayout({ children }: { children: React.ReactNode }) {
+  if (!isSupabaseConfigured()) return <SetupNotice />
+
   const memberships = await getMemberships()
   const active = await getActiveOrg()
   if (!active) redirect('/onboarding')

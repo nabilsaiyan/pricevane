@@ -1,5 +1,7 @@
 import { redirect } from 'next/navigation'
 import { getSupabaseServer, getUser } from '@/lib/supabase/server'
+import { isSupabaseConfigured } from '@/lib/supabase/config'
+import { SetupNotice } from '@/components/app/SetupNotice'
 import './auth.css'
 
 export const dynamic = 'force-dynamic'
@@ -19,6 +21,7 @@ async function sendLink(formData: FormData) {
 export default async function SignIn({ searchParams }: {
   searchParams: Promise<{ sent?: string; next?: string }>
 }) {
+  if (!isSupabaseConfigured()) return <SetupNotice />
   if (await getUser()) redirect('/app')
   const { sent } = await searchParams
 

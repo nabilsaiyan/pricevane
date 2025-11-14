@@ -1,10 +1,17 @@
 import { getSupabaseServer } from '@/lib/supabase/server'
+import { isSupabaseConfigured } from '@/lib/supabase/config'
 
 /**
  * Every query here omits organization_id. That is not an oversight — RLS
  * supplies the tenant boundary, so a query that forgets it returns nothing
  * rather than everything. Passing it as well would be belt-and-braces that
  * hides which layer is actually doing the work.
+ *
+ * Each also returns empty when Supabase is unconfigured. Next evaluates a page
+ * component even when its layout short-circuits, so without this a fresh clone
+ * throws from inside a query before the layout's setup screen can render — and
+ * the developer sees a stack trace instead of instructions. "No database" and
+ * "no rows" are the same answer to the caller.
  */
 
 export type UsageSummary = {
@@ -14,12 +21,14 @@ export type UsageSummary = {
 }
 
 export async function getUsage(): Promise<UsageSummary | null> {
+  if (!isSupabaseConfigured()) return null
   const s = await getSupabaseServer()
   const { data } = await s.from('usage_summary').select('*').maybeSingle()
   return data as UsageSummary | null
 }
 
 export async function getOverview() {
+  if (!isSupabaseConfigured()) return { alerts: [], unreadAlerts: 0, stores: [], lastRun: null }
   const s = await getSupabaseServer()
   const since = new Date(Date.now() - 30 * 86_400_000).toISOString()
 
@@ -41,6 +50,7 @@ export async function getOverview() {
 }
 
 export async function getProducts(q?: string) {
+  if (!isSupabaseConfigured()) return []
   const s = await getSupabaseServer()
   let query = s.from('products')
     .select('id, sku, title, brand, our_price_cents, is_tracked, image_url')
@@ -52,6 +62,7 @@ export async function getProducts(q?: string) {
 
 /** One product, its confirmed rivals, and every snapshot for the window. */
 export async function getProductHistory(productId: string, days = 182) {
+  if (!isSupabaseConfigured()) return null
   const s = await getSupabaseServer()
   const since = new Date(Date.now() - days * 86_400_000).toISOString()
 
@@ -76,6 +87,7 @@ export async function getProductHistory(productId: string, days = 182) {
 }
 
 export async function getReviewQueue() {
+  if (!isSupabaseConfigured()) return []
   const s = await getSupabaseServer()
   const { data } = await s.from('product_matches')
     .select(`id, confidence, reason, model, status,
@@ -88,6 +100,7 @@ export async function getReviewQueue() {
 }
 
 export async function getAlerts() {
+  if (!isSupabaseConfigured()) return []
   const s = await getSupabaseServer()
   const { data } = await s.from('alerts')
     .select(`id, kind, severity, title, body, created_at, read_at,

@@ -1,8 +1,10 @@
 import { getSupabaseServer } from '@/lib/supabase/server'
+import { isSupabaseConfigured } from '@/lib/supabase/config'
 
 export const dynamic = 'force-dynamic'
 
 export default async function Competitors() {
+  if (!isSupabaseConfigured()) return null   // the layout renders the setup screen
   const s = await getSupabaseServer()
   const [{ data: stores }, { data: runs }] = await Promise.all([
     s.from('competitor_stores').select('id, name, base_url, domain, crawl_interval_minutes, is_active'),

@@ -1,6 +1,7 @@
 import { getUsage } from '@/lib/data/queries'
 import { getActiveOrg, canManage } from '@/lib/auth/org'
 import { getSupabaseServer } from '@/lib/supabase/server'
+import { isSupabaseConfigured } from '@/lib/supabase/config'
 import { PlanActions } from '@/components/app/PlanActions'
 
 export const dynamic = 'force-dynamic'
@@ -13,6 +14,7 @@ const TIERS = [
 ]
 
 export default async function Billing() {
+  if (!isSupabaseConfigured()) return null   // the layout renders the setup screen
   const [usage, org] = await Promise.all([getUsage(), getActiveOrg()])
   const s = await getSupabaseServer()
   const { data: sub } = await s.from('subscriptions')
