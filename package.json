@@ -12,10 +12,12 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "test:rls": "vitest run tests/rls",
-    "db:push": "supabase db push",
+    "db:push": "tsx scripts/migrate.ts",
     "db:reset": "supabase db reset",
     "stripe:listen": "stripe listen --forward-to localhost:3000/api/webhooks/stripe",
-    "seed": "tsx scripts/seed.ts"
+    "seed": "tsx scripts/seed.ts",
+    "db:migrate": "tsx scripts/migrate.ts",
+    "alerts": "tsx scripts/evaluate-alerts.ts"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.122.0",
