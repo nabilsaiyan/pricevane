@@ -116,6 +116,19 @@ async function main() {
       `insert into subscriptions (organization_id, tier, status) values ($1,'growth','active')`,
       [org.id])
 
+    // Default rules. Thresholds are the difference between a useful feed and a
+    // filtered one: without them a 0.3% wobble emails you every morning, and
+    // within a week the whole feed is in a folder nobody opens.
+    await pool.query(
+      `insert into alert_rules (organization_id, name, kind, threshold_pct, severity) values
+         ($1,'Undercut on any product','undercut',      1.0,'critical'),
+         ($1,'Competitor price drop',  'price_drop',    5.0,'warning'),
+         ($1,'Competitor price rise',  'price_rise',    8.0,'info'),
+         ($1,'Competitor out of stock','out_of_stock',  null,'info'),
+         ($1,'Competitor restocked',   'back_in_stock', null,'info'),
+         ($1,'New competitor listing', 'new_product',   null,'info')`,
+      [org.id])
+
     const storeIds: string[] = []
     for (const s of STORES) {
       const { rows: [row] } = await pool.query(
