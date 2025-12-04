@@ -22,7 +22,7 @@
 .doc .pull{border-left:2px solid var(--lime);padding:.15rem 0 .15rem 1.1rem;margin:1.6rem 0}
 .doc .pull p{color:var(--t1);font-size:15.5px;margin:0}
 .doc figure{margin:2rem 0}
-.doc figcaption{font-family:var(--fm);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;
+.doc figcaption{font-family:var(--fm);font-size:11px;letter-spacing:.12em;text-transform:uppercase;
   color:var(--t3);margin-top:.8rem}
 .doc .diagram{width:100%;height:auto;display:block;background:#0B0D0E;
   border:1px solid var(--rule);border-radius:5px}

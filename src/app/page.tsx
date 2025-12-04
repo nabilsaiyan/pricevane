@@ -14,6 +14,7 @@ import { LandingMotion } from '@/components/landing/LandingMotion'
 export default function Home() {
   return (
     <>
+      <a className="skip" href="#main">Skip to content</a>
       <div id="rail"><div id="railfill" /></div>
 
       <nav>
@@ -22,16 +23,20 @@ export default function Home() {
       </nav>
 
       {/* 1 — the duel */}
+      <main id="main">
       <header className="hero">
         <svg id="duel" viewBox="0 0 1440 800" preserveAspectRatio="none" role="img"
              aria-label="Your price holds flat while a competitor's price falls and crosses beneath it at 03:14.">
           <path id="mine" d="M0,392 L180,388 L360,396 L540,386 L720,392 L900,389 L1080,394 L1260,390 L1440,388" />
           <path id="theirs" d="M0,250 L180,272 L360,222 L540,300 L720,330 L860,392 L960,470 L1130,556 L1290,570 L1440,562" />
-          <g className="xpt" id="xpt">
-            <circle cx="882" cy="391" r="16" fill="none" stroke="#FF2E4C" strokeWidth="1.5" />
-            <circle cx="882" cy="391" r="4.5" fill="#FF2E4C" />
-          </g>
         </svg>
+
+        {/* The marker lives outside the SVG on purpose. The duel uses
+            preserveAspectRatio="none" so the price lines span any viewport,
+            which stretches every shape inside it too — at 430px the crossing
+            circle rendered as a tall ellipse. In HTML it stays round at every
+            width, positioned at the same point: 882/1440 by 391/800. */}
+        <div className="xpt" id="xpt" aria-hidden="true" />
 
         <div className="acard" id="acard">
           <span className="lb">Undercut</span>
@@ -39,7 +44,7 @@ export default function Home() {
           <p className="m"><b>&minus;10.2%</b> &nbsp;&middot;&nbsp; &euro;9.10 under you &nbsp;&middot;&nbsp; 03:14</p>
         </div>
 
-        <div className="axis xpt" id="axis">
+        <div className="axis" id="axis">
           <div className="p">&euro;89.00</div>
           <div className="p lime">&euro;79.90</div>
         </div>
@@ -72,12 +77,12 @@ export default function Home() {
               <path className="pulse" id="p1" d="M40,90 C180,90 220,90 400,90" />
               <path className="pulse" id="p2" d="M40,90 C170,90 210,154 400,154" />
               <rect className="node" x="6" y="76" width="34" height="28" rx="3" />
-              <rect className="node" x="400" y="12" width="56" height="27" rx="3" />
-              <text className="nl" x="407" y="29">NORTHWIND</text>
-              <rect className="node" x="400" y="76" width="56" height="27" rx="3" />
-              <text className="nl" x="407" y="93">HALDEN</text>
-              <rect className="node" x="400" y="140" width="56" height="27" rx="3" />
-              <text className="nl" x="407" y="157">VESSEL</text>
+              <rect className="node" x="392" y="12" width="66" height="27" rx="3" />
+              <text className="nl" x="399" y="29">NORTHWIND</text>
+              <rect className="node" x="392" y="76" width="66" height="27" rx="3" />
+              <text className="nl" x="399" y="93">HALDEN</text>
+              <rect className="node" x="392" y="140" width="66" height="27" rx="3" />
+              <text className="nl" x="399" y="157">VESSEL</text>
             </svg>
             <div className="feed" id="feed" />
           </div>
@@ -176,6 +181,8 @@ export default function Home() {
           <span className="lb">25 products &middot; nightly &middot; no card</span>
         </div>
       </section>
+
+      </main>
 
       <footer className="wrap">
         <span className="lb">Pricevane &mdash; a Nabil Amhaouch project</span>

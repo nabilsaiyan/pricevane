@@ -7,7 +7,7 @@
  */
 import { describe, it, expect, beforeAll, afterAll, beforeEach } from 'vitest'
 import { Pool } from 'pg'
-import { readFileSync } from 'node:fs'
+import { schemaSql } from '../helpers/schema'
 
 const CONN = process.env.TEST_DATABASE_URL
   ?? 'postgres://postgres:postgres@localhost:55432/pricevane'
@@ -17,13 +17,7 @@ let orgId: string
 
 beforeAll(async () => {
   pool = new Pool({ connectionString: CONN })
-  const sql = (p: string) => readFileSync(p, 'utf8')
-  for (const f of ['tests/rls/fixtures/reset.sql', 'tests/rls/fixtures/supabase-shim.sql',
-                   'supabase/migrations/0001_multitenant_foundation.sql',
-                   'supabase/migrations/0002_rls_policies.sql',
-                   'supabase/migrations/0003_usage_limits.sql']) {
-    await pool.query(sql(f))
-  }
+  for (const stmt of schemaSql()) await pool.query(stmt)
 })
 afterAll(async () => { await pool?.end() })
 

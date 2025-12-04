@@ -10,7 +10,7 @@ export const metadata: Metadata = {
 
 export default function Architecture() {
   return (
-    <article className="doc">
+    <article className="doc" id="main">
       <header className="top">
         <Link href="/" className="wm" style={{ textDecoration: 'none' }}>Price<b>vane</b></Link>
         <span className="lb">Written for a technical reader</span>

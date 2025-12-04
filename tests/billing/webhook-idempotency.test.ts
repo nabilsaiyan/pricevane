@@ -7,8 +7,7 @@
  */
 import { describe, it, expect, beforeAll, afterAll, beforeEach } from 'vitest'
 import { Pool } from 'pg'
-import { readFileSync } from 'node:fs'
-import { resolve } from 'node:path'
+import { schemaSql } from '../helpers/schema'
 import type Stripe from 'stripe'
 import { processStripeEvent } from '../../src/lib/billing/webhook'
 
@@ -54,12 +53,7 @@ function subEvent(opts: {
 
 beforeAll(async () => {
   pool = new Pool({ connectionString: CONN })
-  const sql = (p: string) => readFileSync(resolve(process.cwd(), p), 'utf8')
-  await pool.query(sql('tests/rls/fixtures/reset.sql'))
-  await pool.query(sql('tests/rls/fixtures/supabase-shim.sql'))
-  await pool.query(sql('supabase/migrations/0001_multitenant_foundation.sql'))
-  await pool.query(sql('supabase/migrations/0002_rls_policies.sql'))
-  await pool.query(sql('supabase/migrations/0003_usage_limits.sql'))
+  for (const stmt of schemaSql()) await pool.query(stmt)
 })
 
 afterAll(async () => { await pool?.end() })

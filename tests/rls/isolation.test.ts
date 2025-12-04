@@ -13,8 +13,7 @@
  */
 import { describe, it, expect, beforeAll, afterAll } from 'vitest'
 import { Client } from 'pg'
-import { readFileSync } from 'node:fs'
-import { resolve } from 'node:path'
+import { schemaSql } from '../helpers/schema'
 
 const CONN = process.env.TEST_DATABASE_URL
   ?? 'postgres://postgres:postgres@localhost:55432/pricevane'
@@ -46,12 +45,7 @@ beforeAll(async () => {
   root = new Client({ connectionString: CONN })
   await root.connect()
 
-  const sql = (p: string) => readFileSync(resolve(process.cwd(), p), 'utf8')
-  await root.query(sql('tests/rls/fixtures/reset.sql'))
-  await root.query(sql('tests/rls/fixtures/supabase-shim.sql'))
-  await root.query(sql('supabase/migrations/0001_multitenant_foundation.sql'))
-  await root.query(sql('supabase/migrations/0002_rls_policies.sql'))
-  await root.query(sql('supabase/migrations/0003_usage_limits.sql'))
+  for (const stmt of schemaSql()) await root.query(stmt)
 
   const one = async (q: string, v: unknown[] = []) => (await root.query(q, v)).rows[0]
 
@@ -253,5 +247,32 @@ describe('an anonymous caller', () => {
     await expect(client.query('select * from products'))
       .rejects.toThrow(/permission denied/i)        // everything else is not
     await client.query('rollback')
+  })
+})
+
+describe('demo access', () => {
+  it('grants membership of demo organizations only', async () => {
+    // The demo must not be a policy exception, or the rule these tests exercise
+    // is not the rule that runs in production. join_demo hands out real
+    // memberships instead — and cannot be talked into handing out a real
+    // tenant, because it takes no organization id.
+    await root.query(`update organizations set is_demo = true where id = $1`, [ids.orgA])
+    const { rows: [visitor] } = await root.query(
+      `insert into auth.users (email) values ('visitor@demo.test') returning id`)
+
+    await asUser(visitor.id, async () => {
+      const { rows: joined } = await client.query('select id, is_demo from join_demo()')
+      expect(joined).toHaveLength(1)
+      expect(joined[0].id).toBe(ids.orgA)
+      expect(joined[0].is_demo).toBe(true)
+
+      // Organization B is not a demo, so it was neither joined nor is visible.
+      const { rows: visible } = await client.query('select id from organizations')
+      expect(visible.map(r => r.id)).toEqual([ids.orgA])
+
+      const { rows: bRows } = await client.query(
+        'select * from products where organization_id = $1', [ids.orgB])
+      expect(bRows).toHaveLength(0)
+    })
   })
 })

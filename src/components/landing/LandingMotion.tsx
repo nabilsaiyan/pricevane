@@ -11,6 +11,12 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger'
  * triggers layout. Under prefers-reduced-motion the function fills the two
  * JS-rendered lists and returns before registering a single ScrollTrigger --
  * the page is then the static design, not a frozen animation.
+ *
+ * ORDER MATTERS: this file HIDES things and then reveals them. Nothing is
+ * hidden in the stylesheet. Hiding in CSS and revealing here means any failure
+ * -- a bundle that never loads, a ScrollTrigger whose start never resolves --
+ * leaves the content gone permanently. It cost the primary CTA and both
+ * product photographs before this was turned round.
  */
 const FEED: Array<[string, string, string, boolean]> = [
   ['02:04', 'Northwind — ErgoMesh', '79.90', true],
@@ -64,10 +70,8 @@ export function LandingMotion() {
     window.addEventListener('scroll', onScroll, { passive: true })
     cleanups.push(() => window.removeEventListener('scroll', onScroll))
 
-    if (reduce) {
-      document.querySelectorAll<HTMLElement>('.frow,.out').forEach(e => { e.style.opacity = '1' })
-      return () => cleanups.forEach(f => f())
-    }
+    // Nothing is hidden by default any more, so reduced motion just leaves.
+    if (reduce) return () => cleanups.forEach(f => f())
 
     // ---- magnetic buttons ---------------------------------------------------
     document.querySelectorAll<HTMLElement>('.btn').forEach(btn => {
@@ -97,6 +101,8 @@ export function LandingMotion() {
         gsap.set(el, { strokeDasharray: L, strokeDashoffset: L })
         gsap.to(el, { strokeDashoffset: 0, duration: dur, ease: 'power1.inOut', delay: 0.25 })
       }
+      gsap.set(['#xpt', '#axis', '#acard', '#hcta'], { opacity: 0 })
+      gsap.set('#acard', { y: -8 })
       gsap.timeline({ delay: 1.55 })
         .to('.hero-txt h1 i', { y: '0%', duration: 0.85, stagger: 0.075, ease: 'power3.out' })
         .to(['#xpt', '#axis'], { opacity: 1, duration: 0.4 }, '-=.55')
@@ -131,17 +137,30 @@ export function LandingMotion() {
               `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}<b>:${String(s).padStart(2, '0')}</b>`
           },
         }, 0)
-        .to('.frow', { opacity: 1, duration: 0.1, stagger: 0.1 }, 0)
+        .fromTo('.frow', { opacity: 0 },
+          { opacity: 1, duration: 0.1, stagger: 0.1, immediateRender: false }, 0)
 
       // 3 — the two listings travel in, rotate, and lock.
       const small = window.matchMedia('(max-width:820px)').matches
-      gsap.set('#cardL', { xPercent: small ? -35 : -110, rotate: -10, opacity: 0 })
-      gsap.set('#cardR', { xPercent: small ? 35 : 110, rotate: 10, opacity: 0 })
+
+      // fromTo with immediateRender:false, and no scrub.
+      //
+      // A bare .from() defaults to immediateRender:true — it stamps opacity 0
+      // on the cards the moment the page loads, and ONLY the tween puts it
+      // back. When the trigger failed to resolve (the pinned section above
+      // changes document height after ScrollTrigger has measured it), both
+      // product photographs stayed invisible permanently. immediateRender:false
+      // means nothing is touched until the tween actually runs, so the worst
+      // case is the animation not playing rather than the content not existing.
       gsap.timeline({
-        scrollTrigger: { trigger: '#matchSec', start: 'top 72%', end: 'center 48%', scrub: 0.9 },
+        scrollTrigger: { trigger: '#matchSec', start: 'top 80%', once: true },
       })
-        .to('#cardL', { xPercent: 0, rotate: 0, opacity: 1, ease: 'power2.out' }, 0)
-        .to('#cardR', { xPercent: 0, rotate: 0, opacity: 1, ease: 'power2.out' }, 0)
+        .fromTo('#cardL',
+          { xPercent: small ? -35 : -80, rotate: -10, opacity: 0 },
+          { xPercent: 0, rotate: 0, opacity: 1, duration: 1, ease: 'power3.out', immediateRender: false }, 0)
+        .fromTo('#cardR',
+          { xPercent: small ? 35 : 80, rotate: 10, opacity: 0 },
+          { xPercent: 0, rotate: 0, opacity: 1, duration: 1, ease: 'power3.out', immediateRender: false }, 0)
 
       const sc = { v: 0 }
       let seen = false
@@ -165,9 +184,9 @@ export function LandingMotion() {
       gsap.to('#tape', { yPercent: -50, duration: 26, ease: 'none', repeat: -1 })
       gsap.timeline({ scrollTrigger: { trigger: '#tickSec', start: 'top 62%' } })
         .fromTo('#out1', { opacity: 0, x: 34, rotate: 2 },
-          { opacity: 1, x: 0, rotate: 0, duration: 0.55, ease: 'power3.out' })
+          { opacity: 1, x: 0, rotate: 0, duration: 0.55, ease: 'power3.out', immediateRender: false })
         .fromTo('#out2', { opacity: 0, x: 34, rotate: 2 },
-          { opacity: 1, x: 0, rotate: 0, duration: 0.55, ease: 'power3.out' }, '-=.3')
+          { opacity: 1, x: 0, rotate: 0, duration: 0.55, ease: 'power3.out', immediateRender: false }, '-=.3')
 
       // 5 — the interface stands up and the figures count.
       gsap.to('#device', {
@@ -185,6 +204,13 @@ export function LandingMotion() {
         })
       })
     })
+
+    // A pinned section and images that decode after first paint both change
+    // document height, and ScrollTrigger measured before either settled.
+    const refresh = () => ScrollTrigger.refresh()
+    window.addEventListener('load', refresh)
+    cleanups.push(() => window.removeEventListener('load', refresh))
+    if (document.readyState === 'complete') requestAnimationFrame(refresh)
 
     return () => { ctx.revert(); cleanups.forEach(f => f()) }
   }, [])

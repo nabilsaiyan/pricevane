@@ -25,10 +25,11 @@ export default async function AppLayout({ children }: { children: React.ReactNod
 
   return (
     <div className="shell">
+      <a className="skip" href="#main">Skip to content</a>
       <aside className="aside">
         <span className="brand">Price<b>vane</b></span>
         <OrgSwitcher memberships={memberships} active={active} />
-        <nav className="navgrp">
+        <nav className="navgrp" aria-label="Sections">
           {NAV.map(({ href, label, Icon }) => (
             <Link key={href} href={href}><Icon aria-hidden />{label}</Link>
           ))}
@@ -42,7 +43,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
           </Link>
         </div>
       </aside>
-      <main className="pane">{children}</main>
+      <main className="pane" id="main">{children}</main>
     </div>
   )
 }

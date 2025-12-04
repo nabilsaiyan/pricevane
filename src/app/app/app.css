@@ -22,7 +22,7 @@
   border-radius:4px;padding:.55rem .65rem;color:var(--t1);font-family:var(--fb);font-size:12.5px;
   cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:.5rem}
 .orgsw button:hover{border-color:var(--t3)}
-.orgsw .who{font-family:var(--fm);font-size:9.5px;letter-spacing:.18em;text-transform:uppercase;
+.orgsw .who{font-family:var(--fm);font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;
   color:var(--t3);display:block;margin-bottom:.35rem}
 .orgsw menu{position:absolute;left:0;right:0;top:calc(100% + 4px);margin:0;padding:.25rem;
   background:var(--s2);border:1px solid var(--rule2);border-radius:4px;list-style:none;z-index:20}
@@ -56,7 +56,7 @@ main.pane{padding:clamp(1.1rem,3vw,2.2rem);min-width:0}
 .card>header h2{font-size:13.5px;font-weight:700;letter-spacing:-.01em}
 
 table.t{width:100%;border-collapse:collapse;font-size:13px}
-table.t th{text-align:left;font-family:var(--fm);font-size:9.5px;letter-spacing:.16em;
+table.t th{text-align:left;font-family:var(--fm);font-size:10.5px;letter-spacing:.14em;
   text-transform:uppercase;color:var(--t3);font-weight:400;padding:.6rem 1.05rem;
   border-bottom:1px solid var(--rule)}
 table.t td{padding:.62rem 1.05rem;border-bottom:1px solid var(--rule);color:var(--t2)}
@@ -67,7 +67,7 @@ table.t td a:hover{color:var(--lime)}
 table.t tbody tr:hover{background:rgba(255,255,255,.015)}
 .dn{color:#FF6B5A}.up{color:var(--lime)}
 
-.pill{display:inline-flex;align-items:center;gap:.3rem;font-family:var(--fm);font-size:10px;
+.pill{display:inline-flex;align-items:center;gap:.3rem;font-family:var(--fm);font-size:10.5px;
   letter-spacing:.08em;text-transform:uppercase;padding:.2rem .45rem;border-radius:2px;
   border:1px solid var(--rule2);color:var(--t2)}
 .pill.crit{color:var(--alert);border-color:rgba(255,46,76,.4);background:rgba(255,46,76,.08)}
