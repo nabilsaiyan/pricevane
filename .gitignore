@@ -24,3 +24,8 @@ images/journal.json
 
 # Python crawler environment
 crawlers/.venv/
+
+# Recorder masters. The encoded clips in public/clips/ are committed; the
+# 1440x900 VP8 masters they are cut from are not -- they are large, they are
+# regenerable in one command, and nothing serves them.
+scripts/record/out/
