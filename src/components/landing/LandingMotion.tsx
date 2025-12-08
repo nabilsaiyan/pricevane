@@ -142,6 +142,7 @@ export function LandingMotion() {
 
       // 3 — the two listings travel in, rotate, and lock.
       const small = window.matchMedia('(max-width:820px)').matches
+      const outX = small ? 12 : 34
 
       // fromTo with immediateRender:false, and no scrub.
       //
@@ -183,25 +184,57 @@ export function LandingMotion() {
       // 4 — the tape runs, then one line peels off into email and Slack.
       gsap.to('#tape', { yPercent: -50, duration: 26, ease: 'none', repeat: -1 })
       gsap.timeline({ scrollTrigger: { trigger: '#tickSec', start: 'top 62%' } })
-        .fromTo('#out1', { opacity: 0, x: 34, rotate: 2 },
+        // The entry offset shrinks on phones. At 34px the card is translated
+        // past the right edge of a 360px viewport for the length of the
+        // animation, which is enough to flash a horizontal scrollbar -- an
+        // overflow that only exists while the tween is running and so never
+        // shows up in a static measurement.
+        .fromTo('#out1', { opacity: 0, x: outX, rotate: 2 },
           { opacity: 1, x: 0, rotate: 0, duration: 0.55, ease: 'power3.out', immediateRender: false })
-        .fromTo('#out2', { opacity: 0, x: 34, rotate: 2 },
+        .fromTo('#out2', { opacity: 0, x: outX, rotate: 2 },
           { opacity: 1, x: 0, rotate: 0, duration: 0.55, ease: 'power3.out', immediateRender: false }, '-=.3')
 
-      // 5 — the interface stands up and the figures count.
-      gsap.to('#device', {
+      // 1b — the customer wall types itself in, left to right.
+      gsap.fromTo('.wall span',
+        { opacity: 0, y: 10 },
+        { opacity: 1, y: 0, duration: .5, stagger: .045, ease: 'power2.out',
+          immediateRender: false,
+          scrollTrigger: { trigger: '#proof', start: 'top 85%', once: true } })
+
+      // 1c — the two comparison cards arrive from opposite sides, and the
+      // live one's log lands a line at a time afterwards. Same fromTo +
+      // immediateRender:false rule as everywhere else in this file: a trigger
+      // that never resolves must leave the content visible, not delete it.
+      gsap.timeline({ scrollTrigger: { trigger: '#vsSec', start: 'top 78%', once: true } })
+        .fromTo('#vsA', { opacity: 0, x: small ? -14 : -40 },
+          { opacity: 1, x: 0, duration: .7, ease: 'power3.out', immediateRender: false }, 0)
+        .fromTo('#vsB', { opacity: 0, x: small ? 14 : 40 },
+          { opacity: 1, x: 0, duration: .7, ease: 'power3.out', immediateRender: false }, .1)
+        .fromTo('#vsB .vslog li', { opacity: .25 },
+          { opacity: 1, duration: .28, stagger: .13, ease: 'none', immediateRender: false }, .55)
+
+      // 6 — the review cards rise, keeping the tilt each one already has.
+      gsap.utils.toArray<HTMLElement>('.rcard').forEach((card, i) => {
+        const rest = gsap.getProperty(card, 'rotate') as number
+        gsap.fromTo(card,
+          { opacity: 0, y: 34, rotate: rest },
+          { opacity: 1, y: 0, rotate: rest, duration: .7, delay: i * .09,
+            ease: 'power3.out', immediateRender: false,
+            scrollTrigger: { trigger: '#saysSec', start: 'top 78%', once: true } })
+      })
+
+      // 5 — the interface stands up. Only the frame tilts: the tab strip above
+      // it is a control surface, and a control you have to read at 40 degrees
+      // is a control nobody presses.
+      //
+      // The figures inside it are counted by ProductTabs, not here. There used
+      // to be a GSAP loop over `.k .v` reading a data-c attribute; when the
+      // panes moved into React that attribute went away, so the loop read
+      // Number(undefined ?? 0) and wrote a confident 0 over every number React
+      // had just rendered.
+      gsap.to('#frame3d', {
         rotateX: 0, scale: 1, ease: 'none',
         scrollTrigger: { trigger: '#revSec', start: 'top 85%', end: 'top 18%', scrub: 0.7 },
-      })
-      document.querySelectorAll<HTMLElement>('.k .v').forEach(el => {
-        const o = { v: 0 }
-        const end = Number(el.dataset.c ?? 0)
-        const suffix = el.dataset.s ?? ''
-        gsap.to(o, {
-          v: end, duration: 1.3, ease: 'power2.out',
-          scrollTrigger: { trigger: '#revSec', start: 'top 45%' },
-          onUpdate: () => { el.textContent = `${Math.round(o.v)}${suffix}` },
-        })
       })
     })
 

@@ -142,22 +142,12 @@ nav>*{pointer-events:auto}
 /* ===== 5 DASHBOARD ===== */
 .rev{padding-block:clamp(4rem,12vw,9rem);perspective:1500px}
 .rev h2{font-size:clamp(2.4rem,8.5vw,7rem);max-width:10ch;margin-bottom:clamp(2rem,5vw,3.5rem)}
-.device{transform-style:preserve-3d;border:1px solid var(--rule2);background:var(--s1);
-  border-radius:8px;overflow:hidden;box-shadow:0 70px 130px -45px #000;
-  transform:rotateX(40deg) scale(.85);will-change:transform}
+.device{transform-style:preserve-3d;position:relative;
+  max-width:min(100%,940px);margin-inline:auto}
 .devbar{display:flex;gap:.4rem;align-items:center;padding:.55rem .85rem;
   border-bottom:1px solid var(--rule);background:var(--s2)}
 .dot3{width:8px;height:8px;border-radius:50%;background:var(--rule2)}
 .devbar span{font-family:var(--fm);font-size:9.5px;color:var(--t3);margin-left:.55rem}
-.dash{display:grid;grid-template-columns:168px 1fr;min-height:min(56vh,400px)}
-@media(max-width:760px){.dash{grid-template-columns:1fr}.side{display:none}}
-.side{border-right:1px solid var(--rule);padding:.95rem .8rem;background:#0C0E0F}
-.nav2{display:flex;flex-direction:column;gap:.18rem;margin-top:.65rem}
-.nav2 i{font-style:normal;font-size:12px;color:var(--t2);padding:.35rem .5rem;border-radius:3px}
-.nav2 i.on{background:var(--s2);color:var(--t1)}
-.nav2 i.on::before{content:'';display:inline-block;width:3px;height:11px;background:var(--lime);
-  margin-right:.5rem;vertical-align:-1px}
-.main{padding:1.1rem}
 .krow{display:grid;grid-template-columns:repeat(auto-fit,minmax(108px,1fr));gap:1px;
   background:var(--rule);border:1px solid var(--rule);margin-bottom:1rem}
 .k{background:var(--s1);padding:.75rem .85rem}
@@ -201,3 +191,216 @@ footer{padding:1.8rem var(--pad) 3rem;border-top:1px solid var(--rule)}
   margin:.75rem 0 0;font:400 11px/1.4 var(--fm);
   letter-spacing:.08em;text-transform:uppercase;color:var(--t3);
 }
+
+/* ===== PROOF — the customers, stated as a fact rather than a badge wall =====
+   Supercut runs its logos inline in the hero as a sentence. Doing the same
+   thing keeps them subordinate to the claim they are supporting, and stops the
+   strip reading as the "trusted by" cliché. Set in the display face at one
+   weight so they read as a typographic list, not a collection of logos we do
+   not have. */
+.proof{padding:clamp(2.5rem,6vw,4.5rem) var(--pad) clamp(3rem,7vw,5rem);
+  border-top:1px solid var(--rule)}
+.proofline{margin:0 0 clamp(1.4rem,3vw,2.2rem);font-size:clamp(.95rem,1.5vw,1.1rem);
+  color:var(--t2);max-width:44ch}
+.proofline b{color:var(--t1);font-weight:600;font-variant-numeric:tabular-nums}
+.wall{display:flex;flex-wrap:wrap;gap:clamp(1rem,3.4vw,2.9rem) clamp(1.4rem,4vw,3.4rem);
+  align-items:baseline}
+.wall span{font-family:var(--fb);font-variation-settings:'wdth' 112,'wght' 700;
+  font-size:clamp(.95rem,2vw,1.35rem);letter-spacing:.01em;color:var(--t2);
+  white-space:nowrap;transition:color .2s ease}
+.wall span:hover{color:var(--t1)}
+
+/* ===== VS — the comparison, which is the whole pitch in two boxes ==========
+   Webhound's device. Two cards doing the same job, one of them yours. It needs
+   no logos, no quotations and no claims about anyone else, which is exactly
+   what a product with no customers can afford to say. */
+.vs{padding-block:clamp(4rem,11vw,8rem);border-top:1px solid var(--rule)}
+.vs h2{font-size:clamp(2.2rem,7.5vw,6rem);max-width:12ch;margin-bottom:clamp(2rem,5vw,3.4rem)}
+.vsgrid{display:grid;grid-template-columns:1fr 1fr;gap:clamp(.9rem,2vw,1.6rem)}
+@media(max-width:820px){.vsgrid{grid-template-columns:1fr}}
+.vscard{border:1px solid var(--rule);border-radius:9px;background:var(--s1);
+  padding:clamp(1.1rem,2.4vw,1.6rem);display:flex;flex-direction:column;gap:1rem}
+/* The live one gets the accent hairline and a faint lift. One card is the
+   answer; making them equals would be dishonest about which is which. */
+.vscard.on{border-color:rgba(198,242,78,.32);background:linear-gradient(
+  180deg,rgba(198,242,78,.045),transparent 42%),var(--s1);
+  box-shadow:0 30px 70px -40px rgba(198,242,78,.22)}
+.vshead{display:flex;align-items:center;gap:.6rem;flex-wrap:wrap}
+.vshead b{font-family:var(--fb);font-variation-settings:'wdth' 112,'wght' 700;
+  font-size:1.02rem;letter-spacing:-.01em;color:var(--t1)}
+.vshead .dot{width:7px;height:7px;border-radius:50%;background:var(--t3);flex:none}
+.vshead .dot.live{background:var(--lime);box-shadow:0 0 0 3px rgba(198,242,78,.16)}
+.vshead .tag{margin-left:auto;font:500 9.5px/1 var(--fm);letter-spacing:.13em;
+  text-transform:uppercase;color:var(--t3);border:1px solid var(--rule2);
+  padding:.42em .6em;border-radius:2px}
+.vshead .tag.lime{color:var(--lime);border-color:rgba(198,242,78,.34)}
+.vslog{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:.1rem}
+.vslog li{display:flex;gap:.85rem;align-items:baseline;padding:.42rem 0;
+  font-size:.88rem;color:var(--t2);border-top:1px solid var(--rule)}
+.vslog li:first-child{border-top:0}
+.vslog li i{font-style:normal;font-family:var(--fm);font-variant-numeric:tabular-nums;
+  font-size:11px;color:var(--t3);flex:none;min-width:3.1em}
+.vscard.on .vslog li{color:var(--t1)}
+.vslog li.dim{color:var(--t3)}
+.vsfoot{display:flex;justify-content:space-between;align-items:baseline;gap:1rem;
+  margin-top:auto;padding-top:.9rem;border-top:1px solid var(--rule);
+  font:400 11px/1.4 var(--fm);color:var(--t3);flex-wrap:wrap}
+.vsfoot b{color:var(--t1);font-weight:500;font-variant-numeric:tabular-nums}
+.vsfoot .bad{color:var(--alert)}
+.vsfoot .good{color:var(--lime)}
+.vscap{margin:clamp(1.4rem,3vw,2.2rem) 0 0;font-size:.92rem;color:var(--t3);
+  font-family:var(--fm);letter-spacing:.01em}
+
+/* ===== TABS — one frame, four panes ======================================= */
+.tabs{display:block}
+.tabstrip{display:flex;gap:.15rem;flex-wrap:wrap;margin-bottom:.65rem}
+.tabstrip button{appearance:none;background:none;border:0;cursor:pointer;
+  font:500 11px/1 var(--fm);letter-spacing:.11em;text-transform:uppercase;
+  color:var(--t3);padding:.72em .95em;border-radius:3px;
+  border-bottom:2px solid transparent;transition:color .18s ease,border-color .18s ease}
+.tabstrip button:hover{color:var(--t2)}
+.tabstrip button.on{color:var(--t1);border-bottom-color:var(--lime)}
+.tabnote{margin:0 0 1.1rem;font-size:.86rem;color:var(--t3);min-height:1.3em}
+.frame{position:relative;border:1px solid var(--rule2);border-radius:8px;
+  background:var(--s1);overflow:hidden;box-shadow:0 70px 130px -45px #000;
+  transform:rotateX(40deg) scale(.85);transform-origin:50% 100%;will-change:transform}
+.paneport{min-height:min(52vh,382px)}
+.pane{padding:clamp(.9rem,2vw,1.3rem)}
+
+/* overview */
+.pane-ov{position:relative}
+.pane-ov .k .v.alert{color:var(--alert)}
+/* The crossing dot sits in HTML, not in the stretched SVG: the chart uses
+   preserveAspectRatio="none", which turns any circle inside it into an
+   ellipse. Same bug as the hero, same fix. */
+/* The crossing marker. Solved from the path data rather than nudged until it
+   looked right: the white line runs 89->87 over x 300..375, the lime line
+   74->98 over x 300..360, and they meet at x=335.2, y=88.1 -- which in the
+   600x190 viewBox is 55.86% across and 46.35% down.
+   It sits in .chartbox, in the chart's own percentage space, so the pane's
+   padding never enters the sum. */
+.chartbox{position:relative}
+.xdot{position:absolute;left:55.86%;top:46.35%;
+  width:9px;height:9px;margin:-4.5px 0 0 -4.5px;border-radius:50%;
+  background:var(--alert);box-shadow:0 0 0 4px rgba(255,46,76,.18);pointer-events:none;z-index:2}
+
+/* alerts */
+.pane-al{display:flex;flex-direction:column;gap:.5rem}
+.alrow{display:grid;grid-template-columns:auto 1fr auto;gap:.9rem;align-items:start;
+  padding:.85rem .95rem;border:1px solid var(--rule);border-radius:6px;background:var(--s2)}
+@media(max-width:620px){.alrow{grid-template-columns:1fr;gap:.4rem}}
+.alrow .sev{font:500 9px/1 var(--fm);letter-spacing:.13em;text-transform:uppercase;
+  color:var(--t3);border:1px solid var(--rule2);padding:.45em .55em;border-radius:2px;
+  white-space:nowrap;align-self:start}
+.alrow.crit{border-color:rgba(255,46,76,.34);background:linear-gradient(
+  90deg,rgba(255,46,76,.07),transparent 55%),var(--s2)}
+.alrow.crit .sev{color:var(--alert);border-color:rgba(255,46,76,.4)}
+.alrow.warn .sev{color:var(--lime);border-color:rgba(198,242,78,.34)}
+.alrow h4{margin:0;font-size:.92rem;font-weight:600;color:var(--t1);letter-spacing:-.005em}
+.alrow p{margin:.22rem 0 0;font:400 11.5px/1.5 var(--fm);color:var(--t3)}
+.alrow .ago{font:400 11px/1 var(--fm);color:var(--t3);white-space:nowrap}
+
+/* matches */
+.pane-ma{display:flex;flex-direction:column;gap:.15rem}
+.mrow{display:grid;grid-template-columns:1fr auto auto;gap:1rem;align-items:center;
+  padding:.9rem .95rem;border:1px solid var(--rule);border-radius:6px;background:var(--s2)}
+@media(max-width:760px){.mrow{grid-template-columns:1fr;gap:.6rem}}
+.mtitles{display:flex;align-items:center;gap:.7rem;flex-wrap:wrap;font-size:.87rem}
+.mtitles b{font-weight:600;color:var(--t1)}
+.mtitles span{color:var(--t3);font-family:var(--fm)}
+.mconf{display:flex;flex-direction:column;gap:.2rem;text-align:right}
+.mconf b{font-family:var(--fm);font-variant-numeric:tabular-nums;font-size:1.25rem;
+  letter-spacing:-.03em;color:var(--t2)}
+.mconf b.lime{color:var(--lime)}
+.macts{display:flex;gap:.4rem}
+.macts span{font:500 9.5px/1 var(--fm);letter-spacing:.11em;text-transform:uppercase;
+  padding:.55em .7em;border-radius:3px;border:1px solid var(--rule2);color:var(--t3)}
+.macts .ok{color:var(--lime);border-color:rgba(198,242,78,.34)}
+.mwhy{margin:.5rem 0 1rem;padding-left:.95rem;border-left:2px solid var(--rule2);
+  font-size:.85rem;line-height:1.55;color:var(--t3);max-width:64ch}
+.mrow.low .mconf b{color:var(--t3)}
+
+/* billing */
+.pane-bi{display:flex;flex-direction:column;gap:1.1rem}
+.plan{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:1px;
+  background:var(--rule);border:1px solid var(--rule)}
+.plan>div{background:var(--s2);padding:.8rem .9rem;display:flex;flex-direction:column;gap:.28rem}
+.plan b{font-family:var(--fb);font-variation-settings:'wdth' 108,'wght' 700;
+  font-size:1.02rem;color:var(--t1)}
+.meter{border:1px solid var(--rule);border-radius:6px;padding:1rem 1.05rem;background:var(--s2)}
+.mtop{display:flex;justify-content:space-between;align-items:baseline;gap:1rem}
+.mtop b{font-family:var(--fm);font-variant-numeric:tabular-nums;font-size:1.05rem;color:var(--t1)}
+.mbar{margin-top:.7rem;height:8px;border-radius:4px;background:rgba(236,234,228,.07);overflow:hidden}
+.mbar i{display:block;height:100%;border-radius:4px;
+  background:linear-gradient(90deg,var(--lime),#E6FF8A);
+  transition:width 1.3s cubic-bezier(.22,1,.36,1)}
+.mfoot{margin:.75rem 0 0;font-size:.83rem;line-height:1.55;color:var(--t3);max-width:52ch}
+
+/* annotations — Humblytics writes in the margins of its own screenshot.
+   Hidden below the tablet breakpoint: at narrow widths there is no margin to
+   write in, and an arrow pointing across the content is worse than none. */
+.annos{position:absolute;inset:0;pointer-events:none;z-index:4}
+.note{position:absolute;display:flex;align-items:center;gap:.5rem;
+  font:400 12px/1.35 var(--fm);color:var(--lime);opacity:.8;letter-spacing:.01em;
+  white-space:nowrap}
+.note svg{width:64px;height:28px;flex:none;overflow:visible}
+.note svg path{fill:none;stroke:var(--lime);stroke-width:1.3;opacity:.55;
+  stroke-linecap:round;vector-effect:non-scaling-stroke}
+.note-a{top:27%;right:calc(100% - 1.5rem);text-align:right}
+.note-b{top:63%;left:calc(100% - 1.5rem)}
+/* The guard is arithmetic, not taste. The frame is capped at 940px and
+   centred, so the margin either side is (viewport - 940) / 2. The widest note
+   measures ~210px, and it needs a little air, so it wants ~220px of margin --
+   which arrives at 940 + 440 = 1380px. Below that the note ran off the left
+   edge of the window (measured: x = -17 at a 1280px viewport). An annotation
+   with nowhere to sit is dropped, not overlapped and not clipped. */
+@media(max-width:1400px){.annos{display:none}}
+
+/* ===== SAYS — reviews that lead with the number ============================
+   A testimonial that opens with praise is skipped. One that opens with the
+   figure the product moved gets read, and the quotation underneath then has
+   something to explain. */
+.says{padding-block:clamp(4rem,11vw,8rem);border-top:1px solid var(--rule)}
+.says h2{font-size:clamp(2.2rem,7.5vw,6rem);max-width:8ch;
+  margin-bottom:clamp(2rem,5vw,3.4rem)}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,268px),1fr));
+  gap:clamp(.9rem,2vw,1.4rem)}
+.rcard{margin:0;border:1px solid var(--rule);border-radius:9px;background:var(--s1);
+  padding:clamp(1.2rem,2.6vw,1.7rem);display:flex;flex-direction:column;gap:.55rem}
+/* Each card leans a different way. Three identical cards in a row is the
+   symmetric grid the brief bans; a degree and a half of rotation is enough to
+   read as placed rather than generated. */
+.rcard:nth-child(1){transform:rotate(-.8deg)}
+.rcard:nth-child(3){transform:rotate(.9deg)}
+.rnum{font-family:var(--fb);font-variation-settings:'wdth' 125,'wght' 800;
+  font-size:clamp(2.4rem,5.5vw,3.6rem);letter-spacing:-.05em;line-height:.9;
+  color:var(--lime);font-variant-numeric:tabular-nums}
+.rnum em{font-style:normal;font-size:.45em;letter-spacing:-.02em;color:var(--t2)}
+.rcard blockquote{margin:.5rem 0 0;font-size:.95rem;line-height:1.6;color:var(--t2)}
+.rcard figcaption{display:flex;align-items:center;gap:.7rem;margin-top:auto;
+  padding-top:1.1rem;border-top:1px solid var(--rule)}
+.rcard figcaption i{font-style:normal;font:500 11px/1 var(--fm);letter-spacing:.06em;
+  color:var(--t1);width:30px;height:30px;flex:none;border-radius:50%;
+  border:1px solid var(--rule2);display:grid;place-items:center;background:var(--s2)}
+.rcard figcaption span{display:flex;flex-direction:column;gap:.1rem;font-size:11.5px;
+  line-height:1.35;color:var(--t3);font-family:var(--fm)}
+.rcard figcaption b{font-weight:500;color:var(--t1);font-size:12.5px}
+
+/* ===== the disclosure ===================================================== */
+.fict{margin:1.1rem 0 0;max-width:74ch;font-size:12.5px;line-height:1.65;color:var(--t3)}
+.fict a{color:var(--t2);text-underline-offset:2px}
+.fict a:hover{color:var(--lime)}
+/* Annotations fade in with the pane they belong to. Keyed on the tab, so
+   React remounts them and the animation replays on every swap. */
+.note .ntext{display:block}
+.annos .note{animation:annofade .45s cubic-bezier(.22,1,.36,1) both}
+.annos .note-b{animation-delay:.08s}
+@keyframes annofade{from{opacity:0;transform:translateY(6px)}to{opacity:.8;transform:none}}
+@media(prefers-reduced-motion:reduce){.annos .note{animation:none}}
+/* Belt and braces for the entry tweens, which translate cards horizontally on
+   their way in. overflow-x:clip rather than hidden: hidden would make these
+   sections scroll containers and break position:sticky inside them. */
+.tick-sec,.says,.vs{overflow-x:clip}
+/* Four metrics wrap to 3 + 1 on a phone, which leaves a dead cell beside the
+   alert count. Two by two reads as a set. */
+@media(max-width:560px){.krow{grid-template-columns:1fr 1fr}}
