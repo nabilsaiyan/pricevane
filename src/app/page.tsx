@@ -1,17 +1,108 @@
-import Image from 'next/image'
-import { Hash, Mail } from 'lucide-react'
+import { ArrowRight, Bell, Check, GitCompareArrows, Lock, Radar, Store, Zap } from 'lucide-react'
 import { LandingMotion } from '@/components/landing/LandingMotion'
 import { ProductTabs } from '@/components/landing/ProductTabs'
+import { Faq } from '@/components/landing/Faq'
 
 /**
- * Six scroll beats, almost no prose. The product's own material -- plotted
- * lines, a clock running through the night, tabular figures, two photographs
- * of one chair -- carries the argument, so the copy does not have to.
+ * Structure lifted from orshot.com, measured rather than eyeballed.
  *
- * Server component: this markup is the page you get with JavaScript off or
- * reduced motion on, and it reads as a finished design rather than a stalled
- * animation. LandingMotion layers the choreography on top.
+ * The skeleton is theirs and it is a good one: a self-contained hero with a
+ * tabbed product frame, a trusted-by strip, then numbered chapters -- 01, 02,
+ * 03, 04 -- each separated by a single-quote testimonial band, closing with
+ * stories, a live numbers band, pricing and an FAQ.
+ *
+ * Measured off the real page at 1440px:
+ *   content column   1048px
+ *   nav height       52px
+ *   h1               60px / 600 / 61px / -1.5px tracking, centred
+ *   section headline 40px / 500 / 46px / -0.88px tracking
+ *   vertical rhythm  56 / 80 / 96px
+ *   radii            pill, 24, 16, 12, 8, 6
+ *
+ * The words, figures, imagery and palette are Pricevane's. Their copy sells an
+ * image-rendering API; it would be both an infringement and useless here.
  */
+
+const CHAPTERS = [
+  {
+    n: '01', kind: 'MONITOR', id: 'ch1',
+    title: 'Every rival, every night, while nobody is watching.',
+    body:
+      'Crawlers leave at 02:00 and are finished before breakfast. Each one carries a ' +
+      'coherent identity — proxy, user agent, locale and timezone rotate together, ' +
+      'because rotating the IP alone is how you get linked and blocked.',
+    points: [
+      ['Playwright, not HTTP scraping', 'Prices rendered by JavaScript are still prices.'],
+      ['Per-domain rate limiting', 'Full-jitter backoff. We are a guest on every host.'],
+      ['Every point traces to a run', 'A figure you cannot audit is a figure you cannot trust.'],
+    ],
+    Icon: Radar,
+  },
+  {
+    n: '02', kind: 'MATCH', id: 'ch2',
+    title: 'The same chair, listed under four different names.',
+    body:
+      'Competitors do not use your SKUs, your titles or your photography. Matching is ' +
+      'done by a model that returns a confidence and its reasoning in plain words — ' +
+      'and then waits for a person.',
+    points: [
+      ['Confidence and a reason', 'Never a bare score you have to take on faith.'],
+      ['Nothing auto-applies', 'Not at 0.94. Not at 0.99. A human confirms every match.'],
+      ['Your decisions train it', 'Confirmations and rejections both come back as examples.'],
+    ],
+    Icon: GitCompareArrows,
+  },
+  {
+    n: '03', kind: 'ALERT', id: 'ch3',
+    title: 'Only the crossings. Never the noise.',
+    body:
+      'An undercut alert fires on the crossing, not on the state — the moment a rival ' +
+      'goes under you, once, and not again every night afterwards. Stock alerts fire on ' +
+      'the transition for the same reason.',
+    points: [
+      ['Email and Slack', 'Delivered within seconds of the crossing being written.'],
+      ['Deduplicated by movement', 'A genuine new move gets through; a re-observation does not.'],
+      ['Thresholds you set', 'Undercut at 1%, drop at 5%, rise at 8% — or your own numbers.'],
+    ],
+    Icon: Bell,
+  },
+  {
+    n: '04', kind: 'INFRASTRUCTURE', id: 'ch4',
+    title: 'The database refuses. Not the code.',
+    body:
+      'Tenant isolation is a row-level security policy on every table, not a WHERE clause ' +
+      'somebody has to remember. Application filtering fails open — one missing filter ' +
+      'leaks a table and the tests still pass. This fails closed.',
+    points: [
+      ['Row-level security, forced', 'Applied to the table owner too, so migrations obey it.'],
+      ['Proven adversarially', 'A test crafts a query as org A and still gets zero rows.'],
+      ['Idempotent billing', 'An event ledger means a replayed webhook cannot double-apply.'],
+    ],
+    Icon: Lock,
+  },
+] as const
+
+const QUOTES = [
+  {
+    text:
+      'We used to find out we had been undercut when a customer told us. Now it is in ' +
+      'my inbox before I am awake, with the exact minute it happened.',
+    who: 'Marta R.', role: 'Head of Trading, Lumen Home', init: 'MR',
+  },
+  {
+    text:
+      'Two people, half a day, every fortnight, copying prices into a spreadsheet that ' +
+      'was already wrong by the time we saved it. That job does not exist any more.',
+    who: 'Joris D.', role: 'Founder, Fjorda', init: 'JD',
+  },
+  {
+    text:
+      'The matching is the part I trusted last and rely on most. It has never once ' +
+      'merged two products behind my back.',
+    who: 'Amira K.', role: 'Operations, Sable + Stone', init: 'AK',
+  },
+] as const
+
 export default function Home() {
   return (
     <>
@@ -20,259 +111,190 @@ export default function Home() {
 
       <nav>
         <span className="wm">Price<b>vane</b></span>
-        <button className="btn" type="button">Start free</button>
+        <div className="navr">
+          <a href="/architecture" className="navlink">Architecture</a>
+          <button className="btn" type="button">Start free</button>
+        </div>
       </nav>
 
-      {/* 1 — the duel */}
       <main id="main">
-      <header className="hero">
-        <svg id="duel" viewBox="0 0 1440 800" preserveAspectRatio="none" role="img"
-             aria-label="Your price holds flat while a competitor's price falls and crosses beneath it at 03:14.">
-          <path id="mine" d="M0,392 L180,388 L360,396 L540,386 L720,392 L900,389 L1080,394 L1260,390 L1440,388" />
-          <path id="theirs" d="M0,250 L180,272 L360,222 L540,300 L720,330 L860,392 L960,470 L1130,556 L1290,570 L1440,562" />
-        </svg>
 
-        {/* The marker lives outside the SVG on purpose. The duel uses
-            preserveAspectRatio="none" so the price lines span any viewport,
-            which stretches every shape inside it too — at 430px the crossing
-            circle rendered as a tall ellipse. In HTML it stays round at every
-            width, positioned at the same point: 882/1440 by 391/800. */}
-        <div className="xpt" id="xpt" aria-hidden="true" />
+        {/* ── HERO ─────────────────────────────────────────────── */}
+        <header className="hero">
+          <svg id="duel" viewBox="0 0 1440 800" preserveAspectRatio="none" role="img"
+               aria-label="Your price holds flat while a competitor's price falls and crosses beneath it at 03:14.">
+            <path id="mine" d="M0,392 L180,388 L360,396 L540,386 L720,392 L900,389 L1080,394 L1260,390 L1440,388" />
+            <path id="theirs" d="M0,250 L180,272 L360,222 L540,300 L720,330 L860,392 L960,470 L1130,556 L1290,570 L1440,562" />
+          </svg>
 
-        <div className="acard" id="acard">
-          <span className="lb">Undercut</span>
-          <h3>Northwind dropped ErgoMesh to &euro;79.90</h3>
-          <p className="m"><b>&minus;10.2%</b> &nbsp;&middot;&nbsp; &euro;9.10 under you &nbsp;&middot;&nbsp; 03:14</p>
-        </div>
+          <div className="hwrap">
+            <span className="pill" id="hpill">
+              <b>NEW</b> Nightly crawls with rotating identities
+              <ArrowRight size={13} aria-hidden />
+            </span>
 
-        <div className="axis" id="axis">
-          <div className="p">&euro;89.00</div>
-          <div className="p lime">&euro;79.90</div>
-        </div>
+            <h1 className="h1" id="h1">
+              Know the price<br />before your customer does.
+            </h1>
 
-        <div className="hero-txt">
-          <h1 className="x">
-            <span><i>You were</i></span>
-            <span><i>asleep.</i></span>
-            <span><i className="lime">We weren&rsquo;t.</i></span>
-          </h1>
-          <div className="hero-cta" id="hcta">
-            <button className="btn" type="button">Start free</button>
-            <span className="lb">25 products &middot; no card</span>
-          </div>
-        </div>
-      </header>
+            <p className="hsub" id="hsub">
+              Pricevane watches every competitor listing overnight and tells you the
+              moment one goes under you — with the product matched, the movement
+              measured, and the minute it happened.
+            </p>
 
-      {/* Social proof, inline. Supercut runs its logos as a sentence in the
-          hero rather than a strip below it, which reads as a fact about the
-          product instead of a badge wall. */}
-      <section className="proof" id="proof">
-        <p className="proofline">
-          Watching <b>1,240 listings</b> across <b>38 storefronts</b> for
-        </p>
-        <div className="wall" aria-label="Customers">
-          <span>LUMEN HOME</span>
-          <span>KESTREL &amp; CO</span>
-          <span>FJORDA</span>
-          <span>ARDENT TOOLS</span>
-          <span>SABLE + STONE</span>
-          <span>VELLUM</span>
-          <span>NOOR ATELIER</span>
-          <span>BASTION</span>
-        </div>
-      </section>
-
-      {/* The Webhound device: two cards, same job, side by side. It is the
-          most persuasive block on any reference page and it needs nobody's
-          permission -- no logos, no quotes, no claims about anyone else. */}
-      <section className="wrap vs" id="vsSec">
-        <h2 className="x">One of these<br />runs at 3am.</h2>
-        <div className="vsgrid">
-          <div className="vscard" id="vsA">
-            <div className="vshead">
-              <span className="dot" />
-              <b>By hand</b>
-              <span className="tag">every other Monday</span>
+            <div className="hcta" id="hcta">
+              <button className="btn big" type="button">
+                Start free <ArrowRight size={15} aria-hidden />
+              </button>
+              <a className="btn ghost big" href="/architecture">
+                Read the architecture
+              </a>
             </div>
-            <ul className="vslog">
-              <li><i>09:40</i> Open 12 competitor tabs</li>
-              <li><i>09:58</i> Copy 40 prices into a sheet</li>
-              <li><i>10:24</i> Realise two SKUs were renamed</li>
-              <li><i>10:31</i> Give up on the other 26 storefronts</li>
-              <li className="dim"><i>&nbsp;</i>&hellip;</li>
-            </ul>
-            <div className="vsfoot">
-              <span><b>40</b> of 312 checked</span>
-              <span className="bad">11 days stale</span>
-            </div>
+            <p className="hnote" id="hnote">25 products · nightly · no card</p>
           </div>
 
-          <div className="vscard on" id="vsB">
-            <div className="vshead">
-              <span className="dot live" />
-              <b>Pricevane</b>
-              <span className="tag lime">every night</span>
-            </div>
-            <ul className="vslog">
-              <li><i>02:00</i> 38 storefronts queued</li>
-              <li><i>03:12</i> Northwind cut ErgoMesh 10.2%</li>
-              <li><i>03:14</i> Crossing detected &mdash; alert written</li>
-              <li><i>03:14</i> Email + Slack delivered</li>
-              <li><i>04:48</i> Run closed &middot; 7,612 snapshots</li>
-            </ul>
-            <div className="vsfoot">
-              <span><b>312</b> of 312 checked</span>
-              <span className="good">4 hours ago</span>
-            </div>
+          <div className="hframe" id="hframe"><ProductTabs /></div>
+        </header>
+
+        {/* ── TRUSTED BY ───────────────────────────────────────── */}
+        <section className="band trust" id="proof">
+          <p className="eyebrow">Trusted by retail and brand teams across Europe</p>
+          <div className="wall" aria-label="Customers">
+            <span>LUMEN HOME</span>
+            <span>KESTREL &amp; CO</span>
+            <span>FJORDA</span>
+            <span>ARDENT TOOLS</span>
+            <span>SABLE + STONE</span>
+            <span>VELLUM</span>
+            <span>NOOR ATELIER</span>
+            <span>BASTION</span>
           </div>
-        </div>
-        <p className="vscap">One you have to remember. The other you find waiting.</p>
-      </section>
+        </section>
 
-      {/* 2 — the night run */}
-      <section className="night" id="night">
-        <div className="night-pin wrap">
-          <span className="lb">Last night</span>
-          <div className="clock" id="clock">02:00<b>:00</b></div>
-          <div className="nrun">
-            <svg className="beam" viewBox="0 0 460 180" role="img"
-                 aria-label="Crawlers departing to three competitor storefronts and returning price data.">
-              <path className="wire" d="M40,90 C170,90 210,26 400,26" />
-              <path className="wire" d="M40,90 C180,90 220,90 400,90" />
-              <path className="wire" d="M40,90 C170,90 210,154 400,154" />
-              <path className="pulse" id="p0" d="M40,90 C170,90 210,26 400,26" />
-              <path className="pulse" id="p1" d="M40,90 C180,90 220,90 400,90" />
-              <path className="pulse" id="p2" d="M40,90 C170,90 210,154 400,154" />
-              <rect className="node" x="6" y="76" width="34" height="28" rx="3" />
-              <rect className="node" x="392" y="12" width="66" height="27" rx="3" />
-              <text className="nl" x="399" y="29">NORTHWIND</text>
-              <rect className="node" x="392" y="76" width="66" height="27" rx="3" />
-              <text className="nl" x="399" y="93">HALDEN</text>
-              <rect className="node" x="392" y="140" width="66" height="27" rx="3" />
-              <text className="nl" x="399" y="157">VESSEL</text>
-            </svg>
-            <div className="feed" id="feed" />
+        {/* ── CHAPTERS, alternating with quote bands ───────────── */}
+        {CHAPTERS.map((c, i) => (
+          <div key={c.n}>
+            <section className="band chapter" id={c.id}>
+              <div className="chead">
+                <span className="cnum">{c.n}</span>
+                <span className="ckind">{c.kind}</span>
+              </div>
+              <h2 className="h2">{c.title}</h2>
+              <p className="lede">{c.body}</p>
+
+              <div className="cgrid">
+                {c.points.map(([t, d]) => (
+                  <div className="cpoint" key={t}>
+                    <span className="cico"><Check size={13} aria-hidden /></span>
+                    <div>
+                      <h3>{t}</h3>
+                      <p>{d}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              <div className="cvis" aria-hidden="true">
+                <c.Icon size={20} />
+                <span className="cvis-t">{c.kind}</span>
+              </div>
+            </section>
+
+            {QUOTES[i] && (
+              <section className="band quote">
+                <span className="qmark" aria-hidden="true">&ldquo;</span>
+                <blockquote>{QUOTES[i].text}</blockquote>
+                <figcaption className="qwho">
+                  <i>{QUOTES[i].init}</i>
+                  <span><b>{QUOTES[i].who}</b>{QUOTES[i].role}</span>
+                </figcaption>
+              </section>
+            )}
           </div>
-        </div>
-      </section>
+        ))}
 
-      {/* 3 — one product, two listings */}
-      <section className="wrap match" id="matchSec">
-        <h2 className="x">Same chair.<br />Different name.</h2>
-        <div className="arena">
-          <div className="pcard" id="cardL">
-            <Image src="/products/web/chair-ergomesh.jpg" alt="Ergonomic mesh task chair as listed in your own catalogue."
-                   width={1040} height={780} priority={false} />
-            <div className="meta">
-              <h3>Task Chair, Ergonomic Mesh</h3>
-              <div className="sku">TC-4471-BLK &middot; your catalogue</div>
-              <div className="pz">&euro;89.00</div>
-            </div>
+        {/* ── THE NUMBERS ──────────────────────────────────────── */}
+        <section className="band nums" id="numsSec">
+          <p className="eyebrow">The numbers</p>
+          <h2 className="h2">Read overnight. Every single night.</h2>
+          {/* The final figure is the markup, not the animation's endpoint.
+              These used to render a literal 0 and rely on GSAP to fill them in,
+              which meant anyone on reduced motion -- where the choreography
+              returns before it registers a single trigger -- was told we had
+              captured zero snapshots across zero storefronts. The counter now
+              sets the value to 0 and counts back up to what is already there,
+              so with no JavaScript, a failed bundle or motion turned off, the
+              page still states the truth. */}
+          <div className="ngrid">
+            <div className="nbox"><b data-c="7612">7,612</b><span>Snapshots last run</span></div>
+            <div className="nbox"><b data-c="312">312</b><span>Listings tracked</span></div>
+            <div className="nbox"><b data-c="38">38</b><span>Storefronts watched</span></div>
+            <div className="nbox"><b data-c="4" data-s="h 48m">4h 48m</b><span>From first crawl to last</span></div>
           </div>
-          <div className="lock">
-            <span className="lb">Confidence</span>
-            <div className="sc" id="score">0.94</div>
-            <span className="lb" id="verdict">locked</span>
+        </section>
+
+        {/* ── PRICING ──────────────────────────────────────────── */}
+        <section className="band pricing" id="pricingSec">
+          <p className="eyebrow">Pricing</p>
+          <h2 className="h2">Priced on what you track, not on seats.</h2>
+          <p className="lede center">
+            Invite the whole team on any plan. You pay for products watched and how
+            often we check them.
+          </p>
+
+          <div className="pgrid">
+            {[
+              { n: 'Free', p: '€0', s: 'forever', f: ['25 products', 'Weekly crawls', '1 storefront', 'Email alerts'], cta: 'Start free', on: false },
+              { n: 'Studio', p: '€49', s: 'per month', f: ['350 products', 'Nightly crawls', '10 storefronts', 'Email + Slack', 'LLM matching'], cta: 'Start free trial', on: true },
+              { n: 'Scale', p: '€149', s: 'per month', f: ['2,000 products', 'Twice daily', 'Unlimited storefronts', 'Priority crawl queue', 'API access'], cta: 'Start free trial', on: false },
+            ].map(t => (
+              <div className={`ptier${t.on ? ' on' : ''}`} key={t.n}>
+                {t.on && <span className="pbadge">Most chosen</span>}
+                <h3>{t.n}</h3>
+                <div className="pprice"><b>{t.p}</b><span>{t.s}</span></div>
+                <ul>{t.f.map(f => (
+                  <li key={f}><Check size={13} aria-hidden />{f}</li>
+                ))}</ul>
+                <button className={`btn${t.on ? '' : ' ghost'} full`} type="button">{t.cta}</button>
+              </div>
+            ))}
           </div>
-          <div className="pcard" id="cardR">
-            <Image src="/products/web/chair-ergomesh-rival.jpg" alt="The same chair photographed from a different angle and listed by a competitor under another name."
-                   width={1040} height={780} priority={false} />
-            <div className="meta">
-              <h3>ErgoMesh Office Chair</h3>
-              <div className="sku">NW-88213 &middot; Northwind Supply</div>
-              <div className="pz lime">&euro;79.90</div>
-            </div>
+          <p className="pfoot">
+            <Zap size={13} aria-hidden /> Stripe test mode. Card <code>4242 4242 4242 4242</code>,
+            any future date, any CVC.
+          </p>
+        </section>
+
+        {/* ── FAQ ──────────────────────────────────────────────── */}
+        <section className="band faq" id="faqSec">
+          <p className="eyebrow">Questions</p>
+          <h2 className="h2">The usual ones.</h2>
+          <Faq />
+        </section>
+
+        {/* ── CLOSE ────────────────────────────────────────────── */}
+        <section className="band close2">
+          <Store size={22} aria-hidden />
+          <h2 className="h2 big">Sleep on it.</h2>
+          <p className="lede center">
+            The crawls run at two in the morning either way. You may as well read the
+            answer over coffee.
+          </p>
+          <div className="hcta center">
+            <button className="btn big" type="button">Start free <ArrowRight size={15} aria-hidden /></button>
           </div>
-        </div>
-      </section>
-
-      {/* 4 — the tape, and where one line goes */}
-      <section className="wrap tick-sec" id="tickSec">
-        <div className="tick-grid">
-          <div className="tape"><ul id="tape" /></div>
-          <div className="outs">
-            <div className="out" id="out1">
-              <span className="ic"><Mail size={15} color="#C6F24E" strokeWidth={2} aria-hidden /></span>
-              <div><h4>nabil@brand.com</h4><p>Undercut &mdash; ErgoMesh &euro;79.90</p></div>
-            </div>
-            <div className="out" id="out2">
-              <span className="ic"><Hash size={15} color="#C6F24E" strokeWidth={2} aria-hidden /></span>
-              <div><h4>#pricing</h4><p>Northwind &minus;10.2% &middot; 03:14</p></div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* 5 — the interface, standing up. One frame, four panes. */}
-      <section className="wrap rev" id="revSec">
-        <h2 className="x">Wake up to the answer.</h2>
-        <div className="device" id="device">
-          <ProductTabs />
-        </div>
-      </section>
-
-      {/* 6 — the reviews, as evidence rather than praise. Each card leads with
-          the number the product moved, because "great tool!" is worth nothing
-          and "we stopped being undercut for eleven days at a time" is worth
-          reading. */}
-      <section className="wrap says" id="saysSec">
-        <h2 className="x">What it<br />changed.</h2>
-        <div className="cards">
-          <figure className="rcard" id="rc0">
-            <div className="rnum">11 &rarr; 0</div>
-            <span className="lb">Days of stale pricing</span>
-            <blockquote>
-              We used to find out we&rsquo;d been undercut when a customer told us.
-              Now it&rsquo;s in my inbox before I&rsquo;m awake.
-            </blockquote>
-            <figcaption><i>MR</i><span><b>Marta R.</b>Head of Trading, Lumen Home</span></figcaption>
-          </figure>
-
-          <figure className="rcard" id="rc1">
-            <div className="rnum">4<em>h</em></div>
-            <span className="lb">Back every Monday morning</span>
-            <blockquote>
-              Two people, half a day, every fortnight, copying prices into a
-              spreadsheet that was wrong by the time we saved it.
-            </blockquote>
-            <figcaption><i>JD</i><span><b>Joris D.</b>Founder, Fjorda</span></figcaption>
-          </figure>
-
-          <figure className="rcard" id="rc2">
-            <div className="rnum">0.94</div>
-            <span className="lb">And it still asks first</span>
-            <blockquote>
-              The matching is the part I trusted last and rely on most. It has
-              never once merged two products behind my back.
-            </blockquote>
-            <figcaption><i>AK</i><span><b>Amira K.</b>Ops, Sable + Stone</span></figcaption>
-          </figure>
-        </div>
-      </section>
-
-      {/* 7 — close */}
-      <section className="wrap close">
-        <h2 className="x">Sleep on it.</h2>
-        <div className="row">
-          <button className="btn" type="button">Start free</button>
-          <span className="lb">25 products &middot; nightly &middot; no card</span>
-        </div>
-      </section>
-
+        </section>
       </main>
 
-      <footer className="wrap">
-        <span className="lb">Pricevane &mdash; a Nabil Amhaouch project</span>
-        {/* Said plainly, because a portfolio piece that quietly implies real
-            customers is the one thing that would undo the point of building it
-            carefully. The engineering is real; the companies are not. */}
+      <footer className="band foot">
+        <span className="wm">Price<b>vane</b></span>
         <p className="fict">
-          A portfolio project. Every company, customer, quotation and figure on
-          this page is invented, and the storefronts the crawlers visit are three
-          fictional shops built for the purpose &mdash; no real retailer is
-          crawled. The architecture, the isolation tests and the billing ledger
-          are real and are documented on the{' '}
-          <a href="/architecture">architecture page</a>.
+          A portfolio project by Nabil Amhaouch. Every company, customer, quotation and
+          figure on this page is invented, and the storefronts the crawlers visit are
+          three fictional shops built for the purpose — no real retailer is crawled.
+          The architecture, the isolation tests and the billing ledger are real and are
+          documented on the <a href="/architecture">architecture page</a>.
         </p>
       </footer>
 

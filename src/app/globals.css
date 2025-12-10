@@ -38,144 +38,24 @@ nav>*{pointer-events:auto}
   padding:.7rem 1.1rem;font-weight:700;font-size:13px;border-radius:0 0 3px 0}
 .skip:focus{left:0}
 
-/* ===== 1 HERO : the duel ===== */
-.hero{position:relative;height:100svh;min-height:560px;overflow:hidden}
-#duel{position:absolute;inset:0;width:100%;height:100%}
+
+/* ===== HERO BACKDROP : the price duel =====
+   Now a backdrop behind a centred hero rather than the whole stage, so it is
+   pinned to the top band of the section and faded out where the copy sits. */
+#duel{position:absolute;top:0;left:0;right:0;height:min(66vh,620px);width:100%;
+  opacity:.5;-webkit-mask-image:linear-gradient(#000,#0000 88%);
+  mask-image:linear-gradient(#000,#0000 88%)}
 #duel path{fill:none;stroke-width:2;vector-effect:non-scaling-stroke;
   stroke-linecap:round;stroke-linejoin:round}
-/* Same coordinates as the SVG crossing, but immune to the stretch. */
-.xpt{position:absolute;left:61.25%;top:48.875%;width:32px;height:32px;margin:-16px 0 0 -16px;
-  border:1.5px solid var(--alert);border-radius:50%;z-index:2;pointer-events:none}
-.xpt::after{content:'';position:absolute;inset:50% auto auto 50%;width:9px;height:9px;
-  margin:-4.5px 0 0 -4.5px;background:var(--alert);border-radius:50%}
 #mine{stroke:var(--t1)}
 #theirs{stroke:var(--lime)}
-/* max-width is NOT in ch here. The ch unit resolves against this element's own
-   font-size — 15px inherited from body — not the 9rem headline inside it, so
-   `15ch` capped the hero at ~210px and clipped every line to two letters. */
-.hero-txt{position:absolute;left:var(--pad);right:var(--pad);bottom:clamp(2rem,8vh,5rem);
-  z-index:3;max-width:min(92vw,980px)}
-.hero-txt h1{font-size:clamp(2.8rem,11vw,9rem)}
-.hero-txt h1 span{display:block;overflow:hidden;white-space:nowrap}
-.hero-txt h1 span i{display:block;font-style:normal;transform:translateY(105%)}
-.hero-cta{display:flex;align-items:center;gap:1rem;margin-top:1.6rem;flex-wrap:wrap}
-.hero-cta .lb{white-space:nowrap}
-
-.acard{position:absolute;z-index:4;right:var(--pad);top:clamp(5.5rem,16vh,9rem);
-  width:min(330px,calc(100vw - 2*var(--pad)));background:rgba(17,19,21,.94);
-  backdrop-filter:blur(6px);border:1px solid var(--rule2);border-left:3px solid var(--alert);
-  padding:1rem 1.1rem}
-.acard .lb{color:var(--alert)}
-.acard h3{font-size:.95rem;font-weight:700;letter-spacing:-.01em;margin:.5rem 0 .45rem;line-height:1.3}
-.acard .m{font-family:var(--fm);font-size:11.5px;color:var(--t2);font-variant-numeric:tabular-nums}
-.acard .m b{color:var(--alert);font-weight:400}
-.axis{position:absolute;right:var(--pad);bottom:clamp(2rem,8vh,5rem);text-align:right;z-index:3}
-.axis .p{font-family:var(--fm);font-variant-numeric:tabular-nums;font-size:clamp(1.4rem,3vw,2.1rem);
-  letter-spacing:-.03em;line-height:1.15}
-
-/* ===== 2 NIGHT RUN ===== */
-.night{height:240svh;position:relative}
-.night-pin{height:100svh;display:flex;flex-direction:column;justify-content:center;
-  position:relative;overflow:hidden}
-.clock{font-family:var(--fm);font-variant-numeric:tabular-nums;
-  font-size:clamp(3.4rem,17vw,13rem);letter-spacing:-.05em;line-height:.85;color:var(--t1)}
-.clock b{color:var(--lime);font-weight:inherit}
-.nrun{display:grid;grid-template-columns:1fr minmax(0,420px);gap:clamp(1.5rem,5vw,4rem);
-  align-items:end;margin-top:clamp(1rem,3vw,2rem)}
-@media(max-width:860px){.nrun{grid-template-columns:1fr}}
-.beam{width:100%;height:auto;display:block;max-height:34vh}
-.beam .wire{fill:none;stroke:var(--rule2);stroke-width:1}
-.beam .pulse{fill:none;stroke:var(--lime);stroke-width:2;stroke-dasharray:12 300}
-.beam .node{fill:var(--s2);stroke:var(--rule2)}
-.beam .nl{font-family:var(--fm);font-size:9px;fill:var(--t2);letter-spacing:.1em}
-.feed{border-top:1px solid var(--rule2)}
-.frow{display:grid;grid-template-columns:58px 1fr auto;gap:.7rem;padding:.5rem 0;
-  border-bottom:1px solid var(--rule);font-family:var(--fm);font-size:11px;
-  font-variant-numeric:tabular-nums;color:var(--t2)}
-.frow .t{color:var(--t3)}
-.frow .v{color:var(--t1)}
-.frow.hot .v{color:var(--alert)}
-
-/* ===== 3 MATCH ===== */
-.match{padding-block:clamp(5rem,14vw,11rem);overflow-x:clip}
-.match h2{font-size:clamp(2.4rem,8.5vw,7rem);max-width:9ch;margin-bottom:clamp(2.5rem,6vw,4.5rem)}
-.arena{display:grid;grid-template-columns:1fr auto 1fr;gap:clamp(.8rem,3vw,2.5rem);align-items:center}
-@media(max-width:820px){.arena{grid-template-columns:1fr;gap:1.1rem}}
-.pcard{background:var(--s1);border:1px solid var(--rule2);border-radius:5px;overflow:hidden;
-  will-change:transform}
-.pcard img{display:block;width:100%;aspect-ratio:4/3;object-fit:cover;background:#0F1112}
-.pcard .meta{padding:.95rem 1.05rem}
-.pcard h3{font-size:clamp(.92rem,1.5vw,1.1rem);font-weight:700;letter-spacing:-.01em}
-.pcard .sku{font-family:var(--fm);font-size:10.5px;color:var(--t3);margin-top:.4rem}
-.pcard .pz{font-family:var(--fm);font-variant-numeric:tabular-nums;
-  font-size:clamp(1.3rem,2.8vw,1.85rem);margin-top:.5rem;letter-spacing:-.03em}
-.lock{display:flex;flex-direction:column;align-items:center;gap:.35rem;min-width:118px}
-.lock .sc{font-family:var(--fm);font-variant-numeric:tabular-nums;
-  font-size:clamp(2.2rem,5.5vw,3.6rem);color:var(--lime);letter-spacing:-.05em;line-height:1}
-
-/* ===== 4 ALERTS ticker ===== */
-.tick-sec{padding-block:clamp(4rem,11vw,8rem);border-top:1px solid var(--rule)}
-.tick-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,.85fr);
-  gap:clamp(1.5rem,5vw,4rem);align-items:center}
-@media(max-width:860px){.tick-grid{grid-template-columns:1fr}}
-.tape{height:clamp(230px,34vh,330px);overflow:hidden;position:relative;
-  -webkit-mask-image:linear-gradient(#0000,#000 18%,#000 82%,#0000);
-  mask-image:linear-gradient(#0000,#000 18%,#000 82%,#0000)}
-.tape ul{list-style:none;margin:0;padding:0;position:absolute;inset-inline:0;top:0}
-.tape li{display:grid;grid-template-columns:10px 1fr auto;gap:.7rem;align-items:center;
-  padding:.62rem 0;border-bottom:1px solid var(--rule);font-family:var(--fm);
-  font-size:11.5px;font-variant-numeric:tabular-nums;color:var(--t2)}
-.tape li i{width:5px;height:5px;border-radius:50%;background:var(--t3);display:block}
-.tape li.w i{background:var(--lime)}
-.tape li.c i{background:var(--alert)}
-.tape li.c b{color:var(--alert);font-weight:400}
-.tape li b{color:var(--t1);font-weight:400}
-.outs{display:flex;flex-direction:column;gap:.8rem}
-.out{background:var(--s1);border:1px solid var(--rule2);border-radius:5px;padding:.9rem 1rem;
-  display:flex;gap:.75rem;align-items:flex-start}
-.out .ic{width:26px;height:26px;border-radius:4px;background:var(--s2);flex:none;
-  display:flex;align-items:center;justify-content:center}
-.out .ic svg{width:15px;height:15px}
-.out h4{margin:0;font-size:12.5px;font-weight:700;letter-spacing:-.005em}
-.out p{margin:.25rem 0 0;font-family:var(--fm);font-size:10.5px;color:var(--t3)}
-
-/* ===== 5 DASHBOARD ===== */
-.rev{padding-block:clamp(4rem,12vw,9rem);perspective:1500px}
-.rev h2{font-size:clamp(2.4rem,8.5vw,7rem);max-width:10ch;margin-bottom:clamp(2rem,5vw,3.5rem)}
-.device{transform-style:preserve-3d;position:relative;
-  max-width:min(100%,940px);margin-inline:auto}
-.devbar{display:flex;gap:.4rem;align-items:center;padding:.55rem .85rem;
-  border-bottom:1px solid var(--rule);background:var(--s2)}
-.dot3{width:8px;height:8px;border-radius:50%;background:var(--rule2)}
-.devbar span{font-family:var(--fm);font-size:9.5px;color:var(--t3);margin-left:.55rem}
-.krow{display:grid;grid-template-columns:repeat(auto-fit,minmax(108px,1fr));gap:1px;
-  background:var(--rule);border:1px solid var(--rule);margin-bottom:1rem}
-.k{background:var(--s1);padding:.75rem .85rem}
-.k .v{font-family:var(--fm);font-variant-numeric:tabular-nums;font-size:1.55rem;
-  letter-spacing:-.035em;margin-top:.2rem}
-.chart{width:100%;height:clamp(140px,20vh,215px);display:block;border:1px solid var(--rule);
-  background:#0B0D0E}
-
-/* ===== 6 CLOSE ===== */
-.close{padding-block:clamp(6rem,16vw,12rem);border-top:1px solid var(--rule)}
-.close h2{font-size:clamp(3rem,13vw,10rem)}
-.close .row{display:flex;gap:1.2rem;align-items:center;margin-top:2.5rem;flex-wrap:wrap}
-.close .btn{padding:.95rem 1.9rem;font-size:14px}
-footer{padding:1.8rem var(--pad) 3rem;border-top:1px solid var(--rule)}
-
-#rail{position:fixed;left:0;top:0;bottom:0;width:1px;background:var(--rule);z-index:65}
-#railfill{position:absolute;top:0;left:0;width:100%;height:0;background:var(--lime)}
-@media(max-width:700px){#rail{display:none}}
-
-@media(prefers-reduced-motion:reduce){
-  .hero-txt h1 span i{transform:none}
-  .device{transform:none!important}
-  .pcard{transform:none!important}
-  .hero-txt h1 span i{transform:none!important}
-  .night{height:auto}
-  .night-pin{height:auto;padding-block:4rem}
-}
-
+/* Same coordinates as the SVG crossing, but immune to the stretch: the duel
+   uses preserveAspectRatio="none", which turns a circle into an ellipse. */
+.xpt{position:absolute;left:61.25%;top:calc(min(66vh,620px) * .489);width:26px;height:26px;
+  margin:-13px 0 0 -13px;border:1.5px solid var(--alert);border-radius:50%;z-index:2;
+  pointer-events:none;opacity:.85}
+.xpt::after{content:'';position:absolute;inset:50% auto auto 50%;width:7px;height:7px;
+  margin:-3.5px 0 0 -3.5px;background:var(--alert);border-radius:50%}
 /* ---- product clips -------------------------------------------------------
    The clip sits in a fixed aspect-ratio box so the poster and the video
    occupy exactly the same space and nothing shifts when the video mounts.
@@ -192,70 +72,26 @@ footer{padding:1.8rem var(--pad) 3rem;border-top:1px solid var(--rule)}
   letter-spacing:.08em;text-transform:uppercase;color:var(--t3);
 }
 
-/* ===== PROOF — the customers, stated as a fact rather than a badge wall =====
-   Supercut runs its logos inline in the hero as a sentence. Doing the same
-   thing keeps them subordinate to the claim they are supporting, and stops the
-   strip reading as the "trusted by" cliché. Set in the display face at one
-   weight so they read as a typographic list, not a collection of logos we do
-   not have. */
-/* The nav is fixed, so the first thing after the full-height hero scrolls up
-   underneath it. The extra top padding is the nav's own height plus air --
-   without it the wordmark sat on top of the "Watching 1,240 listings" line. */
-.proof{padding:clamp(4.5rem,8vw,6.5rem) var(--pad) clamp(3rem,7vw,5rem);
-  border-top:1px solid var(--rule)}
-.proofline{margin:0 0 clamp(1.4rem,3vw,2.2rem);font-size:clamp(.95rem,1.5vw,1.1rem);
-  color:var(--t2);max-width:44ch}
-.proofline b{color:var(--t1);font-weight:600;font-variant-numeric:tabular-nums}
-.wall{display:flex;flex-wrap:wrap;gap:clamp(1rem,3.4vw,2.9rem) clamp(1.4rem,4vw,3.4rem);
-  align-items:baseline}
-.wall span{font-family:var(--fb);font-variation-settings:'wdth' 112,'wght' 700;
-  font-size:clamp(.95rem,2vw,1.35rem);letter-spacing:.01em;color:var(--t2);
-  white-space:nowrap;transition:color .2s ease}
-.wall span:hover{color:var(--t1)}
 
-/* ===== VS — the comparison, which is the whole pitch in two boxes ==========
-   Webhound's device. Two cards doing the same job, one of them yours. It needs
-   no logos, no quotations and no claims about anyone else, which is exactly
-   what a product with no customers can afford to say. */
-.vs{padding-block:clamp(4rem,11vw,8rem);border-top:1px solid var(--rule)}
-.vs h2{font-size:clamp(2.2rem,7.5vw,6rem);max-width:12ch;margin-bottom:clamp(2rem,5vw,3.4rem)}
-.vsgrid{display:grid;grid-template-columns:1fr 1fr;gap:clamp(.9rem,2vw,1.6rem)}
-@media(max-width:820px){.vsgrid{grid-template-columns:1fr}}
-.vscard{border:1px solid var(--rule);border-radius:9px;background:var(--s1);
-  padding:clamp(1.1rem,2.4vw,1.6rem);display:flex;flex-direction:column;gap:1rem}
-/* The live one gets the accent hairline and a faint lift. One card is the
-   answer; making them equals would be dishonest about which is which. */
-.vscard.on{border-color:rgba(198,242,78,.32);background:linear-gradient(
-  180deg,rgba(198,242,78,.045),transparent 42%),var(--s1);
-  box-shadow:0 30px 70px -40px rgba(198,242,78,.22)}
-.vshead{display:flex;align-items:center;gap:.6rem;flex-wrap:wrap}
-.vshead b{font-family:var(--fb);font-variation-settings:'wdth' 112,'wght' 700;
-  font-size:1.02rem;letter-spacing:-.01em;color:var(--t1)}
-.vshead .dot{width:7px;height:7px;border-radius:50%;background:var(--t3);flex:none}
-.vshead .dot.live{background:var(--lime);box-shadow:0 0 0 3px rgba(198,242,78,.16)}
-.vshead .tag{margin-left:auto;font:500 9.5px/1 var(--fm);letter-spacing:.13em;
-  text-transform:uppercase;color:var(--t3);border:1px solid var(--rule2);
-  padding:.42em .6em;border-radius:2px}
-.vshead .tag.lime{color:var(--lime);border-color:rgba(198,242,78,.34)}
-.vslog{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:.1rem}
-.vslog li{display:flex;gap:.85rem;align-items:baseline;padding:.42rem 0;
-  font-size:.88rem;color:var(--t2);border-top:1px solid var(--rule)}
-.vslog li:first-child{border-top:0}
-.vslog li i{font-style:normal;font-family:var(--fm);font-variant-numeric:tabular-nums;
-  font-size:11px;color:var(--t3);flex:none;min-width:3.1em}
-.vscard.on .vslog li{color:var(--t1)}
-.vslog li.dim{color:var(--t3)}
-.vsfoot{display:flex;justify-content:space-between;align-items:baseline;gap:1rem;
-  margin-top:auto;padding-top:.9rem;border-top:1px solid var(--rule);
-  font:400 11px/1.4 var(--fm);color:var(--t3);flex-wrap:wrap}
-.vsfoot b{color:var(--t1);font-weight:500;font-variant-numeric:tabular-nums}
-.vsfoot .bad{color:var(--alert)}
-.vsfoot .good{color:var(--lime)}
-.vscap{margin:clamp(1.4rem,3vw,2.2rem) 0 0;font-size:.92rem;color:var(--t3);
-  font-family:var(--fm);letter-spacing:.01em}
+/* Shared frame furniture. These lived in the old dashboard section and were
+   dropped when the stylesheet was rebuilt on the new skeleton, which left the
+   metric row stacking vertically and the window bar with no chrome. */
+.devbar{display:flex;gap:.4rem;align-items:center;padding:.55rem .85rem;
+  border-bottom:1px solid var(--rule);background:var(--s2)}
+.dot3{width:8px;height:8px;border-radius:50%;background:var(--rule2);flex:none}
+.devbar span{font-family:var(--fm);font-size:9.5px;color:var(--t3);margin-left:.55rem}
+.krow{display:grid;grid-template-columns:repeat(auto-fit,minmax(108px,1fr));gap:1px;
+  background:var(--rule);border:1px solid var(--rule);margin-bottom:1rem}
+.k{background:var(--s1);padding:.75rem .85rem}
+.k .lb{display:block}
+.k .v{font-family:var(--fm);font-variant-numeric:tabular-nums;font-size:1.55rem;
+  letter-spacing:-.035em;margin-top:.2rem;color:var(--t1)}
+.chart{width:100%;height:clamp(140px,20vh,215px);display:block;border:1px solid var(--rule);
+  background:#0B0D0E}
+@media(max-width:560px){.krow{grid-template-columns:1fr 1fr}}
 
 /* ===== TABS — one frame, four panes ======================================= */
-.tabs{display:block}
+.tabs{display:block;position:relative;max-width:1180px;margin-inline:auto}
 .tabstrip{display:flex;gap:.15rem;flex-wrap:wrap;margin-bottom:.65rem}
 .tabstrip button{appearance:none;background:none;border:0;cursor:pointer;
   font:500 11px/1 var(--fm);letter-spacing:.11em;text-transform:uppercase;
@@ -265,8 +101,7 @@ footer{padding:1.8rem var(--pad) 3rem;border-top:1px solid var(--rule)}
 .tabstrip button.on{color:var(--t1);border-bottom-color:var(--lime)}
 .tabnote{margin:0 0 1.1rem;font-size:.86rem;color:var(--t3);min-height:1.3em}
 .frame{position:relative;border:1px solid var(--rule2);border-radius:8px;
-  background:var(--s1);overflow:hidden;box-shadow:0 70px 130px -45px #000;
-  transform:rotateX(40deg) scale(.85);transform-origin:50% 100%;will-change:transform}
+  background:var(--s1);overflow:hidden;box-shadow:0 70px 130px -45px #000}
 .paneport{min-height:min(52vh,382px)}
 .pane{padding:clamp(.9rem,2vw,1.3rem)}
 
@@ -357,53 +192,181 @@ footer{padding:1.8rem var(--pad) 3rem;border-top:1px solid var(--rule)}
    which arrives at 940 + 440 = 1380px. Below that the note ran off the left
    edge of the window (measured: x = -17 at a 1280px viewport). An annotation
    with nowhere to sit is dropped, not overlapped and not clipped. */
-@media(max-width:1400px){.annos{display:none}}
+@media(max-width:1620px){.annos{display:none}}
 
-/* ===== SAYS — reviews that lead with the number ============================
-   A testimonial that opens with praise is skipped. One that opens with the
-   figure the product moved gets read, and the quotation underneath then has
-   something to explain. */
-.says{padding-block:clamp(4rem,11vw,8rem);border-top:1px solid var(--rule)}
-.says h2{font-size:clamp(2.2rem,7.5vw,6rem);max-width:8ch;
-  margin-bottom:clamp(2rem,5vw,3.4rem)}
-.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,268px),1fr));
-  gap:clamp(.9rem,2vw,1.4rem)}
-.rcard{margin:0;border:1px solid var(--rule);border-radius:9px;background:var(--s1);
-  padding:clamp(1.2rem,2.6vw,1.7rem);display:flex;flex-direction:column;gap:.55rem}
-/* Each card leans a different way. Three identical cards in a row is the
-   symmetric grid the brief bans; a degree and a half of rotation is enough to
-   read as placed rather than generated. */
-.rcard:nth-child(1){transform:rotate(-.8deg)}
-.rcard:nth-child(3){transform:rotate(.9deg)}
-.rnum{font-family:var(--fb);font-variation-settings:'wdth' 125,'wght' 800;
-  font-size:clamp(2.4rem,5.5vw,3.6rem);letter-spacing:-.05em;line-height:.9;
-  color:var(--lime);font-variant-numeric:tabular-nums}
-.rnum em{font-style:normal;font-size:.45em;letter-spacing:-.02em;color:var(--t2)}
-.rcard blockquote{margin:.5rem 0 0;font-size:.95rem;line-height:1.6;color:var(--t2)}
-.rcard figcaption{display:flex;align-items:center;gap:.7rem;margin-top:auto;
-  padding-top:1.1rem;border-top:1px solid var(--rule)}
-.rcard figcaption i{font-style:normal;font:500 11px/1 var(--fm);letter-spacing:.06em;
-  color:var(--t1);width:30px;height:30px;flex:none;border-radius:50%;
-  border:1px solid var(--rule2);display:grid;place-items:center;background:var(--s2)}
-.rcard figcaption span{display:flex;flex-direction:column;gap:.1rem;font-size:11.5px;
-  line-height:1.35;color:var(--t3);font-family:var(--fm)}
-.rcard figcaption b{font-weight:500;color:var(--t1);font-size:12.5px}
 
-/* ===== the disclosure ===================================================== */
-.fict{margin:1.1rem 0 0;max-width:74ch;font-size:12.5px;line-height:1.65;color:var(--t3)}
+/* ===================================================================== *
+ *  LANDING SKELETON
+ *
+ *  Geometry measured off orshot.com at a 1440px viewport, not estimated:
+ *
+ *    content column    1048px
+ *    nav height        52px
+ *    h1                60 / 600 / 61 / -1.5px, centred
+ *    section headline  40 / 500 / 46 / -0.88px
+ *    vertical rhythm   56 (strip) / 80 (quote, faq) / 96 (chapter)
+ *    radii             pill, 24, 16, 12, 8, 6
+ *
+ *  The structure is theirs; the type, palette and words are Pricevane's.
+ * ===================================================================== */
+
+:root{
+  --col:1048px;
+  --py-sm:56px; --py-md:80px; --py-lg:96px;
+  --r-pill:999px; --r-xl:24px; --r-lg:16px; --r-md:12px; --r-sm:8px; --r-xs:6px;
+}
+
+nav{height:52px;padding-block:0}
+.navr{display:flex;align-items:center;gap:1.4rem}
+.navlink{color:var(--t2);text-decoration:none;font-size:13px}
+.navlink:hover{color:var(--t1)}
+
+.band{max-width:var(--col);margin-inline:auto;padding-inline:var(--pad)}
+.band.trust{padding-block:var(--py-sm)}
+.band.chapter,.band.nums,.band.pricing{padding-block:var(--py-lg)}
+.band.quote,.band.faq{padding-block:var(--py-md)}
+.band.close2{padding-block:calc(var(--py-lg) * 1.35);text-align:center}
+.band.foot{padding-block:var(--py-md);border-top:1px solid var(--rule)}
+
+/* Shared type roles, sized from the measured scale. */
+.eyebrow{font-family:var(--fm);font-size:12px;line-height:18px;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--t3);margin:0 0 1rem}
+.h1{font-family:var(--fb);font-variation-settings:'wdth' 112,'wght' 800;
+  font-size:clamp(2.3rem,5.6vw,60px);line-height:1.02;letter-spacing:-.032em;
+  text-align:center;text-wrap:balance;margin:0}
+.h2{font-family:var(--fb);font-variation-settings:'wdth' 108,'wght' 750;
+  font-size:clamp(1.8rem,3.6vw,40px);line-height:1.14;letter-spacing:-.022em;
+  text-wrap:balance;margin:0}
+.h2.big{font-size:clamp(2.6rem,7vw,72px);line-height:.98;letter-spacing:-.038em}
+.lede{margin:1rem 0 0;font-size:16px;line-height:1.62;color:var(--t2);max-width:62ch}
+.lede.center{margin-inline:auto;text-align:center}
+
+/* ── HERO ───────────────────────────────────────────────────────────── */
+.hero{position:relative;padding:calc(52px + clamp(3rem,9vh,6rem)) 0 0;overflow:hidden}
+.hwrap{position:relative;z-index:3;max-width:var(--col);margin-inline:auto;
+  padding-inline:var(--pad);display:flex;flex-direction:column;align-items:center}
+.pill{display:inline-flex;align-items:center;gap:.55rem;border:1px solid var(--rule2);
+  border-radius:var(--r-pill);padding:.42rem .85rem;font-size:13px;color:var(--t2);
+  background:rgba(17,19,21,.7);backdrop-filter:blur(6px);margin-bottom:1.6rem}
+.pill b{font-family:var(--fm);font-size:9.5px;font-weight:500;letter-spacing:.14em;
+  color:var(--lime);border:1px solid rgba(198,242,78,.34);border-radius:var(--r-pill);
+  padding:.25em .55em}
+.hsub{margin:1.4rem 0 0;font-size:17px;line-height:1.6;color:var(--t2);
+  max-width:56ch;text-align:center}
+.hcta{display:flex;gap:.7rem;margin-top:2rem;flex-wrap:wrap;justify-content:center}
+.hcta.center{margin-top:2.2rem}
+.btn.big{padding:.82rem 1.5rem;font-size:14px;border-radius:var(--r-sm)}
+.btn.ghost{background:transparent;color:var(--t1);border:1px solid var(--rule2);
+  text-decoration:none}
+.btn.ghost:hover{border-color:var(--t3)}
+.btn.full{width:100%;justify-content:center;margin-top:auto}
+.hnote{margin:1rem 0 0;font-family:var(--fm);font-size:11.5px;color:var(--t3);
+  letter-spacing:.06em}
+/* The product frame sits half in the hero and half in the section below it,
+   cropped by the fold -- the arrangement every reference page uses. */
+.hframe{position:relative;z-index:3;max-width:1180px;margin:clamp(3rem,7vh,5rem) auto 0;
+  padding-inline:var(--pad)}
+
+/* ── TRUSTED BY ─────────────────────────────────────────────────────── */
+.trust{text-align:center}
+.trust .eyebrow{margin-bottom:1.8rem}
+.wall{display:flex;flex-wrap:wrap;justify-content:center;
+  gap:clamp(.9rem,2.6vw,2rem) clamp(1.3rem,3.6vw,3rem);align-items:baseline}
+.wall span{font-family:var(--fb);font-variation-settings:'wdth' 110,'wght' 700;
+  font-size:clamp(.9rem,1.7vw,1.15rem);color:var(--t3);white-space:nowrap;
+  transition:color .2s ease}
+.wall span:hover{color:var(--t1)}
+
+/* ── CHAPTERS ───────────────────────────────────────────────────────── */
+.chapter{position:relative;border-top:1px solid var(--rule)}
+.chead{display:flex;align-items:center;gap:.85rem;margin-bottom:1.1rem}
+.cnum{font-family:var(--fm);font-size:12px;line-height:18px;color:var(--lime);
+  border:1px solid rgba(198,242,78,.3);border-radius:var(--r-xs);padding:.3em .5em}
+.ckind{font-family:var(--fm);font-size:12px;letter-spacing:.18em;color:var(--t3)}
+.cgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,248px),1fr));
+  gap:1.6rem 2rem;margin-top:2.6rem}
+.cpoint{display:grid;grid-template-columns:auto 1fr;gap:.75rem;align-items:start}
+.cico{width:22px;height:22px;flex:none;border-radius:var(--r-xs);display:grid;
+  place-items:center;background:rgba(198,242,78,.1);color:var(--lime);margin-top:1px}
+.cpoint h3{margin:0;font-size:14px;font-weight:600;letter-spacing:-.005em;color:var(--t1)}
+.cpoint p{margin:.3rem 0 0;font-size:13px;line-height:1.55;color:var(--t3)}
+/* A quiet watermark so a chapter is identifiable at a glance when scrolling
+   fast. Decorative, and hidden where there is no margin for it. */
+.cvis{position:absolute;top:var(--py-lg);right:var(--pad);display:flex;align-items:center;
+  gap:.5rem;color:var(--t3);opacity:.45}
+.cvis-t{font-family:var(--fm);font-size:10px;letter-spacing:.18em}
+@media(max-width:860px){.cvis{display:none}}
+
+/* ── QUOTE BANDS ────────────────────────────────────────────────────── */
+.quote{text-align:center;border-top:1px solid var(--rule)}
+.qmark{display:block;font-family:var(--fb);font-size:56px;line-height:.6;
+  color:var(--lime);opacity:.5;margin-bottom:.9rem}
+.quote blockquote{margin:0 auto;max-width:44ch;font-size:clamp(1.05rem,2.1vw,1.4rem);
+  line-height:1.5;letter-spacing:-.012em;color:var(--t1);text-wrap:balance}
+.qwho{display:flex;align-items:center;justify-content:center;gap:.7rem;margin-top:1.8rem}
+.qwho i{font-style:normal;font-family:var(--fm);font-size:11px;width:32px;height:32px;
+  border-radius:var(--r-pill);border:1px solid var(--rule2);display:grid;place-items:center;
+  background:var(--s1);color:var(--t1)}
+.qwho span{display:flex;flex-direction:column;text-align:left;font-family:var(--fm);
+  font-size:11.5px;line-height:1.4;color:var(--t3)}
+.qwho b{font-weight:500;font-size:12.5px;color:var(--t1)}
+
+/* ── NUMBERS ────────────────────────────────────────────────────────── */
+.nums{border-top:1px solid var(--rule)}
+.ngrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,190px),1fr));
+  gap:1px;background:var(--rule);border:1px solid var(--rule);border-radius:var(--r-md);
+  overflow:hidden;margin-top:2.4rem}
+.nbox{background:var(--s1);padding:1.5rem 1.4rem}
+.nbox b{display:block;font-family:var(--fm);font-variant-numeric:tabular-nums;
+  font-size:clamp(1.9rem,4vw,2.5rem);letter-spacing:-.04em;color:var(--lime);font-weight:400}
+.nbox span{display:block;margin-top:.45rem;font-size:12.5px;color:var(--t3)}
+
+/* ── PRICING ────────────────────────────────────────────────────────── */
+.pricing{border-top:1px solid var(--rule);text-align:center}
+.pgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,262px),1fr));
+  gap:1rem;margin-top:2.8rem;text-align:left}
+.ptier{position:relative;display:flex;flex-direction:column;gap:1rem;
+  border:1px solid var(--rule);border-radius:var(--r-lg);background:var(--s1);
+  padding:1.6rem 1.5rem}
+.ptier.on{border-color:rgba(198,242,78,.34);
+  background:linear-gradient(180deg,rgba(198,242,78,.05),transparent 40%),var(--s1)}
+.pbadge{position:absolute;top:-9px;left:1.5rem;font-family:var(--fm);font-size:9.5px;
+  letter-spacing:.14em;text-transform:uppercase;color:#08090A;background:var(--lime);
+  padding:.32em .6em;border-radius:var(--r-pill)}
+.ptier h3{margin:0;font-size:15px;font-weight:600}
+.pprice{display:flex;align-items:baseline;gap:.45rem}
+.pprice b{font-family:var(--fm);font-size:2.1rem;letter-spacing:-.045em;font-weight:400}
+.pprice span{font-size:12.5px;color:var(--t3)}
+.ptier ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:.55rem}
+.ptier li{display:flex;align-items:center;gap:.55rem;font-size:13.5px;color:var(--t2)}
+.ptier li svg{color:var(--lime);flex:none}
+.pfoot{display:flex;align-items:center;justify-content:center;gap:.5rem;margin:1.8rem 0 0;
+  font-size:12.5px;color:var(--t3)}
+.pfoot svg{color:var(--lime)}
+.pfoot code{font-family:var(--fm);font-size:12px;color:var(--t1)}
+
+/* ── FAQ ────────────────────────────────────────────────────────────── */
+.faq{border-top:1px solid var(--rule)}
+.qa{margin-top:2.2rem;border-top:1px solid var(--rule)}
+.qitem{border-bottom:1px solid var(--rule)}
+.qitem button{width:100%;display:flex;align-items:center;justify-content:space-between;
+  gap:1.5rem;background:none;border:0;cursor:pointer;text-align:left;padding:1.15rem 0;
+  font-family:var(--fb);font-size:15px;font-weight:600;color:var(--t1);letter-spacing:-.005em}
+.qitem button svg{flex:none;color:var(--t3);transition:transform .2s ease,color .2s ease}
+.qitem.on button svg{transform:rotate(45deg);color:var(--lime)}
+.qitem button:hover svg{color:var(--t1)}
+.qbody p{margin:0;padding:0 0 1.3rem;max-width:70ch;font-size:14px;line-height:1.65;
+  color:var(--t2)}
+@media(prefers-reduced-motion:no-preference){
+  .qbody{animation:qopen .28s cubic-bezier(.22,1,.36,1) both}
+  @keyframes qopen{from{opacity:0;transform:translateY(-5px)}to{opacity:1;transform:none}}
+}
+
+/* ── CLOSE + FOOT ───────────────────────────────────────────────────── */
+.close2{border-top:1px solid var(--rule)}
+.close2>svg{color:var(--lime);margin-bottom:1.4rem}
+.close2 .h2{margin-bottom:0}
+.foot{display:flex;flex-direction:column;gap:1rem}
+.fict{margin:0;max-width:74ch;font-size:12.5px;line-height:1.65;color:var(--t3)}
 .fict a{color:var(--t2);text-underline-offset:2px}
 .fict a:hover{color:var(--lime)}
-/* Annotations fade in with the pane they belong to. Keyed on the tab, so
-   React remounts them and the animation replays on every swap. */
-.note .ntext{display:block}
-.annos .note{animation:annofade .45s cubic-bezier(.22,1,.36,1) both}
-.annos .note-b{animation-delay:.08s}
-@keyframes annofade{from{opacity:0;transform:translateY(6px)}to{opacity:.8;transform:none}}
-@media(prefers-reduced-motion:reduce){.annos .note{animation:none}}
-/* Belt and braces for the entry tweens, which translate cards horizontally on
-   their way in. overflow-x:clip rather than hidden: hidden would make these
-   sections scroll containers and break position:sticky inside them. */
-.tick-sec,.says,.vs{overflow-x:clip}
-/* Four metrics wrap to 3 + 1 on a phone, which leaves a dead cell beside the
-   alert count. Two by two reads as a set. */
-@media(max-width:560px){.krow{grid-template-columns:1fr 1fr}}
