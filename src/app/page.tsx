@@ -2,6 +2,8 @@ import { ArrowRight, Bell, Check, GitCompareArrows, Lock, Radar, Store, Zap } fr
 import { LandingMotion } from '@/components/landing/LandingMotion'
 import { ProductTabs } from '@/components/landing/ProductTabs'
 import { Faq } from '@/components/landing/Faq'
+import { Media } from '@/components/landing/Media'
+import { Chips, Providers } from '@/components/landing/Chips'
 
 /**
  * Structure lifted from orshot.com, measured rather than eyeballed.
@@ -37,6 +39,12 @@ const CHAPTERS = [
       ['Every point traces to a run', 'A figure you cannot audit is a figure you cannot trust.'],
     ],
     Icon: Radar,
+    chips: ['Rotating identities', 'Per-domain rate limits', 'Retry with backoff',
+            'Crawl run records', 'Structured error logs', 'JSON-LD + microdata'],
+    more: '+4 more',
+    media: { w: 1026, h: 577, label: 'A night run, start to finish', kind: 'video' as const,
+             hint: '02:00 departure through 04:48 close, 38 storefronts' },
+    action: 'Watch a run',
   },
   {
     n: '02', kind: 'MATCH', id: 'ch2',
@@ -51,6 +59,12 @@ const CHAPTERS = [
       ['Your decisions train it', 'Confirmations and rejections both come back as examples.'],
     ],
     Icon: GitCompareArrows,
+    chips: ['Confidence + reason', 'Human confirmation', 'Few-shot feedback',
+            'Rejections stored too', 'Structured output', 'Review floor at 0.55'],
+    more: '+3 more',
+    media: { w: 467, h: 309, label: 'Match review queue', kind: 'image' as const,
+             hint: 'Two listings, a confidence, and the model\u2019s reasoning' },
+    action: 'See how matching works',
   },
   {
     n: '03', kind: 'ALERT', id: 'ch3',
@@ -65,6 +79,12 @@ const CHAPTERS = [
       ['Thresholds you set', 'Undercut at 1%, drop at 5%, rise at 8% — or your own numbers.'],
     ],
     Icon: Bell,
+    chips: ['Email', 'Slack', 'Undercut', 'Price drop', 'Price rise',
+            'Back in stock', 'Out of stock', 'Discontinued'],
+    more: '+2 more',
+    media: { w: 516, h: 369, label: 'An alert, delivered', kind: 'image' as const,
+             hint: 'The crossing, the movement, and the minute it happened' },
+    action: 'See alert rules',
   },
   {
     n: '04', kind: 'INFRASTRUCTURE', id: 'ch4',
@@ -79,6 +99,12 @@ const CHAPTERS = [
       ['Idempotent billing', 'An event ledger means a replayed webhook cannot double-apply.'],
     ],
     Icon: Lock,
+    chips: ['Postgres RLS', 'FORCE on every table', 'Stripe event ledger',
+            'Out-of-order guard', 'Plan limits in the database', 'Audit log'],
+    more: '+5 more',
+    media: { w: 1026, h: 577, label: 'The isolation test running', kind: 'video' as const,
+             hint: 'A crafted cross-tenant query returning zero rows' },
+    action: 'Read the architecture',
   },
 ] as const
 
@@ -111,9 +137,16 @@ export default function Home() {
 
       <nav>
         <span className="wm">Price<b>vane</b></span>
+        <div className="navmid">
+          <a className="navlink" href="#ch1">Monitor</a>
+          <a className="navlink" href="#ch2">Matching</a>
+          <a className="navlink" href="#ch3">Alerts</a>
+          <a className="navlink" href="#pricingSec">Pricing</a>
+          <a className="navlink" href="/architecture">Architecture</a>
+        </div>
         <div className="navr">
-          <a href="/architecture" className="navlink">Architecture</a>
-          <button className="btn" type="button">Start free</button>
+          <a className="navlink" href="/sign-in">Log in</a>
+          <button className="btn" type="button">Sign up</button>
         </div>
       </nav>
 
@@ -147,8 +180,9 @@ export default function Home() {
               <button className="btn big" type="button">
                 Start free <ArrowRight size={15} aria-hidden />
               </button>
-              <a className="btn ghost big" href="/architecture">
-                Read the architecture
+              <a className="btn ghost big provbtn" href="/architecture">
+                <Providers compact />
+                Bring your own model
               </a>
             </div>
             <p className="hnote" id="hnote">25 products · nightly · no card</p>
@@ -195,6 +229,17 @@ export default function Home() {
                 ))}
               </div>
 
+              <Chips items={c.chips} more={c.more} />
+
+              <div className="cmedia">
+                <Media w={c.media.w} h={c.media.h} label={c.media.label}
+                       hint={c.media.hint} kind={c.media.kind} />
+              </div>
+
+              <a className="clink" href="/architecture">
+                {c.action} <ArrowRight size={13} aria-hidden />
+              </a>
+
               <div className="cvis" aria-hidden="true">
                 <c.Icon size={20} />
                 <span className="cvis-t">{c.kind}</span>
@@ -213,6 +258,33 @@ export default function Home() {
             )}
           </div>
         ))}
+
+
+        {/* ── CUSTOMER STORIES ─────────────────────────────────── */}
+        <section className="band stories" id="storiesSec">
+          <p className="eyebrow">Customer stories</p>
+          <h2 className="h2">How teams stopped losing the morning.</h2>
+          <div className="sgrid">
+            {[
+              ['Caught a price war on day two, not week three.', 'Ben T.', 'Lumen Home'],
+              ['We reprice twice a week now instead of twice a month.', 'Ivan K.', 'Kestrel & Co'],
+              ['The stockout alert alone paid for the year.', 'Mihai C.', 'Fjorda'],
+              ['Matching found 40 listings we did not know existed.', 'Nic C.', 'Ardent Tools'],
+              ['One dashboard for four brands, none of them mixed up.', 'Max M.', 'Sable + Stone'],
+              ['I stopped keeping a competitor spreadsheet entirely.', 'Francesca O.', 'Vellum'],
+              ['We were the only shop in stock for eleven days.', 'Thomas S.', 'Noor Atelier'],
+              ['Set it up on a Friday. It found something that night.', 'David F.', 'Bastion'],
+            ].map(([q, who, co]) => (
+              <figure className="scard" key={who}>
+                <p>&ldquo;{q}&rdquo;</p>
+                <figcaption className="swho">
+                  <Media w={36} h={36} label={who} kind="avatar" />
+                  <span><b>{who}</b>{co}</span>
+                </figcaption>
+              </figure>
+            ))}
+          </div>
+        </section>
 
         {/* ── THE NUMBERS ──────────────────────────────────────── */}
         <section className="band nums" id="numsSec">
