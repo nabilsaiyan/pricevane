@@ -1,5 +1,5 @@
 import type { Metadata } from 'next'
-import { Archivo, Geist_Mono } from 'next/font/google'
+import { Archivo, Geist, Geist_Mono } from 'next/font/google'
 import './globals.css'
 
 // Archivo carries a real width axis (62–125). The display voice is the same
@@ -8,6 +8,15 @@ const archivo = Archivo({
   subsets: ['latin'],
   axes: ['wdth'],
   variable: '--font-archivo',
+  display: 'swap',
+})
+
+// The UI face. Archivo carries a width axis and is a display type; setting
+// body copy, navigation and buttons in it was a real mistake -- an expanded
+// grotesque is exhausting below about 20px. Archivo now does headings only.
+const geist = Geist({
+  subsets: ['latin'],
+  variable: '--font-geist',
   display: 'swap',
 })
 
@@ -26,7 +35,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={`${archivo.variable} ${geistMono.variable}`}>
+    <html lang="en" className={`${archivo.variable} ${geist.variable} ${geistMono.variable}`}>
       <body>{children}</body>
     </html>
   )

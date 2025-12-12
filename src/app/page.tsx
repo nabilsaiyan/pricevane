@@ -135,7 +135,7 @@ export default function Home() {
       <a className="skip" href="#main">Skip to content</a>
       <div id="rail"><div id="railfill" /></div>
 
-      <nav>
+      <nav className="topnav">
         <span className="wm">Price<b>vane</b></span>
         <div className="navmid">
           <a className="navlink" href="#ch1">Monitor</a>
@@ -359,15 +359,66 @@ export default function Home() {
         </section>
       </main>
 
-      <footer className="band foot">
-        <span className="wm">Price<b>vane</b></span>
-        <p className="fict">
-          A portfolio project by Nabil Amhaouch. Every company, customer, quotation and
-          figure on this page is invented, and the storefronts the crawlers visit are
-          three fictional shops built for the purpose — no real retailer is crawled.
-          The architecture, the isolation tests and the billing ledger are real and are
-          documented on the <a href="/architecture">architecture page</a>.
-        </p>
+      {/* The reference footer is 1035px tall and carries 70 links across
+          columns. Ours was two lines. Every link here resolves -- to a real
+          route or to a section on this page. A footer stuffed with dead
+          anchors is worse than a short one, so the columns are sized to what
+          actually exists. */}
+      <footer className="foot">
+        <div className="footin">
+          <div className="footbrand">
+            <span className="wm">Price<b>vane</b></span>
+            <p>Competitor prices, checked overnight.<br />Read the answer over coffee.</p>
+            <div className="social" aria-label="Elsewhere">
+              {['GitHub', 'LinkedIn', 'X', 'RSS'].map(n => (
+                <a key={n} href="/architecture" aria-label={n}><i /></a>
+              ))}
+            </div>
+          </div>
+
+          <div className="footcols">
+            {[
+              ['Product', [
+                ['Monitoring', '#ch1'], ['Matching', '#ch2'], ['Alerts', '#ch3'],
+                ['Isolation', '#ch4'], ['Pricing', '#pricingSec'], ['Live demo', '/demo'],
+              ]],
+              ['Engineering', [
+                ['Architecture', '/architecture'], ['Row-level security', '/architecture'],
+                ['Billing ledger', '/architecture'], ['Crawler design', '/architecture'],
+                ['Matching provider', '/architecture'],
+              ]],
+              ['Company', [
+                ['Customer stories', '#storiesSec'], ['The numbers', '#numsSec'],
+                ['Questions', '#faqSec'], ['Sign in', '/sign-in'],
+              ]],
+            ].map(([title, links]) => (
+              <nav className="footcol" key={title as string} aria-label={title as string}>
+                <h3>{title as string}</h3>
+                <ul>
+                  {(links as [string, string][]).map(([t, href]) => (
+                    <li key={t}><a href={href}>{t}</a></li>
+                  ))}
+                </ul>
+              </nav>
+            ))}
+          </div>
+        </div>
+
+        <div className="footnote">
+          <p className="fict">
+            A portfolio project by Nabil Amhaouch. Every company, customer, quotation
+            and figure on this page is invented, and the storefronts the crawlers visit
+            are three fictional shops built for the purpose &mdash; no real retailer is
+            crawled. The architecture, the isolation tests and the billing ledger are
+            real and are documented on the{' '}
+            <a href="/architecture">architecture page</a>.
+          </p>
+          <p className="footlegal">
+            <span>&copy; 2026 Pricevane</span>
+            <span>Stripe test mode only &mdash; no live keys</span>
+            <span>Built with Next.js, Postgres and Playwright</span>
+          </p>
+        </div>
       </footer>
 
       <LandingMotion />

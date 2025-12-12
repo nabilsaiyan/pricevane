@@ -6,12 +6,13 @@
   --t1:#ECEAE4;--t2:#8A9195;--t3:#7C858A;
   --lime:#C6F24E;--alert:#FF2E4C;
   --fb:var(--font-archivo),'Helvetica Neue',Arial,sans-serif;
+  --fu:var(--font-geist),'Helvetica Neue',Arial,sans-serif;
   --fm:var(--font-geist-mono),ui-monospace,SFMono-Regular,Menlo,monospace;
   --pad:clamp(1.1rem,5vw,5rem);
 }
 *{box-sizing:border-box}
-body{margin:0;background:var(--ink);color:var(--t1);font-family:var(--fb);
-  line-height:1.45;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+body{margin:0;background:var(--ink);color:var(--t1);font-family:var(--fu);
+  font-size:16px;line-height:1.5;-webkit-font-smoothing:antialiased;overflow-x:hidden}
 h1,h2,h3,p{margin:0}
 .x{font-variation-settings:'wdth' 125,'wght' 700;letter-spacing:-.045em;line-height:.85;
   text-wrap:balance}
@@ -20,15 +21,15 @@ h1,h2,h3,p{margin:0}
 .wrap{max-width:1280px;margin:0 auto;padding-inline:var(--pad)}
 .lime{color:var(--lime)}
 
-nav{position:fixed;top:0;left:0;right:0;z-index:70;display:flex;justify-content:space-between;
-  align-items:center;padding:1rem var(--pad);
+.topnav{position:fixed;top:0;left:0;right:0;z-index:70;display:flex;
+  justify-content:space-between;align-items:center;padding:1rem var(--pad);
   background:linear-gradient(#08090Aee,#08090A00);pointer-events:none}
-nav>*{pointer-events:auto}
+.topnav>*{pointer-events:auto}
 .wm{font-family:var(--fm);font-size:11.5px;letter-spacing:.26em;text-transform:uppercase}
 .wm b{color:var(--lime);font-weight:400}
 .btn{display:inline-flex;align-items:center;gap:.45rem;background:var(--lime);color:#08090A;
-  border:0;padding:.6rem 1.15rem;border-radius:2px;font-family:var(--fb);font-size:12.5px;
-  font-weight:700;cursor:pointer;will-change:transform}
+  border:0;padding:.62rem 1.2rem;border-radius:var(--r-xs,6px);font-family:var(--fu);
+  font-size:14px;font-weight:600;cursor:pointer;will-change:transform;text-decoration:none}
 .btn:focus-visible,a:focus-visible,button:focus-visible,
 [tabindex]:focus-visible{outline:2px solid var(--lime);outline-offset:3px;border-radius:2px}
 .btn:focus-visible{outline-color:var(--t1)}
@@ -216,9 +217,9 @@ nav>*{pointer-events:auto}
   --r-pill:999px; --r-xl:24px; --r-lg:16px; --r-md:12px; --r-sm:8px; --r-xs:6px;
 }
 
-nav{height:52px;padding-block:0}
+.topnav{height:52px;padding-block:0}
 .navr{display:flex;align-items:center;gap:1.4rem}
-.navlink{color:var(--t2);text-decoration:none;font-size:13px}
+.navlink{color:var(--t2);text-decoration:none;font-family:var(--fu);font-size:15px}
 .navlink:hover{color:var(--t1)}
 
 .band{max-width:var(--col);margin-inline:auto;padding-inline:var(--pad)}
@@ -237,8 +238,11 @@ nav{height:52px;padding-block:0}
 .h2{font-family:var(--fb);font-variation-settings:'wdth' 108,'wght' 750;
   font-size:clamp(1.8rem,3.6vw,40px);line-height:1.14;letter-spacing:-.022em;
   text-wrap:balance;margin:0}
+.h3{font-family:var(--fb);font-variation-settings:'wdth' 106,'wght' 700;
+  font-size:clamp(1.4rem,2.6vw,32px);line-height:1.2;letter-spacing:-.018em;margin:0}
 .h2.big{font-size:clamp(2.6rem,7vw,72px);line-height:.98;letter-spacing:-.038em}
-.lede{margin:1rem 0 0;font-size:16px;line-height:1.62;color:var(--t2);max-width:62ch}
+.lede{margin:1.15rem 0 0;font-family:var(--fu);font-size:clamp(17px,1.5vw,21px);
+  line-height:1.55;color:var(--t2);max-width:58ch}
 .lede.center{margin-inline:auto;text-align:center}
 
 /* ── HERO ───────────────────────────────────────────────────────────── */
@@ -251,7 +255,7 @@ nav{height:52px;padding-block:0}
 .pill b{font-family:var(--fm);font-size:9.5px;font-weight:500;letter-spacing:.14em;
   color:var(--lime);border:1px solid rgba(198,242,78,.34);border-radius:var(--r-pill);
   padding:.25em .55em}
-.hsub{margin:1.4rem 0 0;font-size:17px;line-height:1.6;color:var(--t2);
+.hsub{margin:1.5rem 0 0;font-family:var(--fu);font-size:clamp(17px,1.6vw,21px);line-height:1.55;color:var(--t2);
   max-width:56ch;text-align:center}
 .hcta{display:flex;gap:.7rem;margin-top:2rem;flex-wrap:wrap;justify-content:center}
 .hcta.center{margin-top:2.2rem}
@@ -459,3 +463,31 @@ nav{height:52px;padding-block:0}
 .swho span{display:flex;flex-direction:column;font-family:var(--fm);font-size:11px;
   line-height:1.4;color:var(--t3)}
 .swho b{font-weight:500;font-size:12px;color:var(--t1)}
+
+/* ── FOOTER ─────────────────────────────────────────────────────────────
+   The reference footer is 1035px tall with 70 links across columns; ours was
+   a single line. Sized to what actually exists rather than padded out with
+   anchors that go nowhere. */
+.foot{border-top:1px solid var(--rule);margin-top:0}
+.footin{max-width:var(--col);margin-inline:auto;padding:var(--py-lg) var(--pad) 0;
+  display:grid;grid-template-columns:minmax(220px,1fr) 2fr;gap:3rem}
+@media(max-width:800px){.footin{grid-template-columns:1fr;gap:2.4rem}}
+.footbrand p{margin:1rem 0 0;font-size:14px;line-height:1.6;color:var(--t3)}
+.social{display:flex;gap:.5rem;margin-top:1.4rem}
+.social a{width:32px;height:32px;border-radius:var(--r-sm);border:1px solid var(--rule2);
+  display:grid;place-items:center;background:var(--s1);transition:border-color .18s ease}
+.social a:hover{border-color:var(--t3)}
+/* Empty marks, like the provider slots: drop an svg in and it renders. */
+.social i{width:14px;height:14px;border-radius:3px;background:var(--rule2);display:block}
+.footcols{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:2rem}
+@media(max-width:800px){.footcols{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:460px){.footcols{grid-template-columns:1fr}}
+.footcol h3{margin:0 0 .9rem;font-family:var(--fm);font-size:10px;letter-spacing:.18em;
+  text-transform:uppercase;color:var(--t3);font-weight:400}
+.footcol ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:.6rem}
+.footcol a{color:var(--t2);text-decoration:none;font-size:14px}
+.footcol a:hover{color:var(--t1)}
+.footnote{max-width:var(--col);margin-inline:auto;padding:var(--py-md) var(--pad) var(--py-md);
+  display:flex;flex-direction:column;gap:1.2rem}
+.footlegal{display:flex;flex-wrap:wrap;gap:.5rem 1.6rem;margin:0;padding-top:1.2rem;
+  border-top:1px solid var(--rule);font-family:var(--fm);font-size:11px;color:var(--t3)}
