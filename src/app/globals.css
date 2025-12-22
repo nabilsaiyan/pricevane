@@ -491,3 +491,13 @@ h1,h2,h3,p{margin:0}
   display:flex;flex-direction:column;gap:1.2rem}
 .footlegal{display:flex;flex-wrap:wrap;gap:.5rem 1.6rem;margin:0;padding-top:1.2rem;
   border-top:1px solid var(--rule);font-family:var(--fm);font-size:11px;color:var(--t3)}
+
+/* Each headline line rides in its own clipped box, so the mask reveal has
+   something to slide out of. */
+.h1 .ln{display:block;overflow:hidden;padding-bottom:.06em}
+.h1 .ln i{display:block;font-style:normal;will-change:transform}
+/* The header condenses once you leave the hero. */
+.topnav{transition:background .25s ease,backdrop-filter .25s ease,height .25s ease,
+  border-color .25s ease;border-bottom:1px solid transparent}
+.topnav.stuck{background:rgba(8,9,10,.82);backdrop-filter:blur(14px) saturate(1.3);
+  border-bottom-color:var(--rule)}

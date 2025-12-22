@@ -167,7 +167,8 @@ export default function Home() {
             </span>
 
             <h1 className="h1" id="h1">
-              Know the price<br />before your customer does.
+              <span className="ln"><i>Know the price</i></span>
+              <span className="ln"><i>before your customer does.</i></span>
             </h1>
 
             <p className="hsub" id="hsub">
