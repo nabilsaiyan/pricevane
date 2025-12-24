@@ -2,6 +2,8 @@ import { redirect } from 'next/navigation'
 import { getSupabaseServer, getUser } from '@/lib/supabase/server'
 import { isSupabaseConfigured } from '@/lib/supabase/config'
 import { SetupNotice } from '@/components/app/SetupNotice'
+import { LocalSignIn } from '@/components/app/LocalSignIn'
+import { isLocalAuth, getLocalUserId } from '@/lib/auth/local'
 import './auth.css'
 
 export const dynamic = 'force-dynamic'
@@ -21,6 +23,12 @@ async function sendLink(formData: FormData) {
 export default async function SignIn({ searchParams }: {
   searchParams: Promise<{ sent?: string; next?: string }>
 }) {
+  // Local development: identity comes from the seeded auth.users table rather
+  // than an emailed link, since there is no mail provider or Supabase project.
+  if (isLocalAuth()) {
+    if (await getLocalUserId()) redirect('/app')
+    return <div className="authwrap"><div className="authcard wide"><LocalSignIn /></div></div>
+  }
   if (!isSupabaseConfigured()) return <SetupNotice />
   if (await getUser()) redirect('/app')
   const { sent } = await searchParams

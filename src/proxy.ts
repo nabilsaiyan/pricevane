@@ -23,6 +23,10 @@ import { isSupabaseConfigured } from '@/lib/supabase/config'
 export async function proxy(request: NextRequest) {
   let response = NextResponse.next({ request })
 
+  // Local development runs without Supabase entirely: identity comes from a
+  // signed cookie and the page layer resolves it. Nothing to refresh here.
+  if (process.env.PRICEVANE_LOCAL_AUTH === '1') return response
+
   // No Supabase configured — a fresh clone before .env.local exists. Let the
   // request through; /app renders a setup screen that says what to do, which is
   // more use than a stack trace in the dev overlay.

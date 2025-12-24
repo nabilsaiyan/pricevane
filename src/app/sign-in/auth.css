@@ -14,3 +14,26 @@
 .btn3{width:100%;background:var(--lime);color:#08090A;border:0;padding:.7rem;border-radius:3px;
   font-family:var(--fb);font-size:13.5px;font-weight:700;cursor:pointer}
 .btn3:focus-visible{outline:2px solid var(--t1);outline-offset:2px}
+
+/* ---- development sign-in -------------------------------------------------
+   Only rendered when PRICEVANE_LOCAL_AUTH is on. Deliberately looks like a
+   tool rather than a product screen, so nobody mistakes it for the real
+   sign-in flow. */
+.authcard.wide{max-width:560px;text-align:left}
+.signin .eyebrow{display:block;font-family:var(--fm);font-size:10px;letter-spacing:.18em;
+  text-transform:uppercase;color:var(--t3);margin-bottom:.8rem}
+.signin .h2{font-size:1.7rem;margin:0 0 .8rem}
+.signin .lede{font-size:14px;line-height:1.6;color:var(--t2);margin:0 0 1.6rem;max-width:52ch}
+.idlist{display:flex;flex-direction:column;gap:.6rem}
+.idlist form{margin:0}
+.idcard{width:100%;display:flex;align-items:center;gap:.85rem;cursor:pointer;
+  background:var(--s1);border:1px solid var(--rule2);border-radius:8px;
+  padding:.9rem 1rem;text-align:left;transition:border-color .18s ease,background .18s ease}
+.idcard:hover{border-color:var(--lime);background:var(--s2)}
+.idcard i{font-style:normal;font-family:var(--fm);font-size:11px;width:34px;height:34px;
+  flex:none;border-radius:50%;border:1px solid var(--rule2);display:grid;place-items:center;
+  color:var(--t1);background:var(--s2)}
+.idcard span{display:flex;flex-direction:column;gap:.15rem;flex:1}
+.idcard b{font-size:13.5px;font-weight:600;color:var(--t1)}
+.idcard span{font-family:var(--fm);font-size:11px;color:var(--t3)}
+.idcard em{font-style:normal;font-family:var(--fm);font-size:11px;color:var(--lime)}

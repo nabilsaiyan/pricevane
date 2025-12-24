@@ -4,6 +4,7 @@ import { LayoutDashboard, Package, Store, GitCompareArrows, Bell, CreditCard, Sh
 import { getMemberships, getActiveOrg } from '@/lib/auth/org'
 import { isSupabaseConfigured } from '@/lib/supabase/config'
 import { SetupNotice } from '@/components/app/SetupNotice'
+import { isLocalAuth, getLocalUserId } from '@/lib/auth/local'
 import { OrgSwitcher } from '@/components/app/OrgSwitcher'
 import './app.css'
 
@@ -17,7 +18,14 @@ const NAV = [
 ] as const
 
 export default async function AppLayout({ children }: { children: React.ReactNode }) {
-  if (!isSupabaseConfigured()) return <SetupNotice />
+  // Local development has no Supabase project but does have a real database
+  // and a real identity, so the setup screen would be a lie. Unauthenticated
+  // callers go to the sign-in picker instead.
+  if (isLocalAuth()) {
+    if (!(await getLocalUserId())) redirect('/sign-in')
+  } else if (!isSupabaseConfigured()) {
+    return <SetupNotice />
+  }
 
   const memberships = await getMemberships()
   const active = await getActiveOrg()

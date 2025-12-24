@@ -4,9 +4,21 @@ create extension if not exists "citext";
 -- Minimal stand-in for the parts of Supabase the policies depend on, so the
 -- isolation test runs against plain Postgres in CI without the whole platform.
 -- It mirrors Supabase's real definitions: same roles, same auth.uid() body.
-create role anon nologin;
-create role authenticated nologin;
-create role service_role nologin bypassrls;
+-- Roles are cluster-wide, not per-database. A bare CREATE ROLE fails the
+-- moment a second database in the same cluster applies this shim -- which is
+-- exactly what happens when the dev database is built alongside the test one.
+do $$
+begin
+  if not exists (select 1 from pg_roles where rolname = 'anon') then
+    create role anon nologin;
+  end if;
+  if not exists (select 1 from pg_roles where rolname = 'authenticated') then
+    create role authenticated nologin;
+  end if;
+  if not exists (select 1 from pg_roles where rolname = 'service_role') then
+    create role service_role nologin bypassrls;
+  end if;
+end $$;
 
 create schema if not exists auth;
 
