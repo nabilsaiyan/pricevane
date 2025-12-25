@@ -2,6 +2,7 @@ import { ArrowRight, Bell, Check, GitCompareArrows, Lock, Radar, Store, Zap } fr
 import { LandingMotion } from '@/components/landing/LandingMotion'
 import { ProductTabs } from '@/components/landing/ProductTabs'
 import { Faq } from '@/components/landing/Faq'
+import { SiteNav } from '@/components/landing/SiteNav'
 import { Media } from '@/components/landing/Media'
 import { Chips, Providers } from '@/components/landing/Chips'
 
@@ -135,20 +136,7 @@ export default function Home() {
       <a className="skip" href="#main">Skip to content</a>
       <div id="rail"><div id="railfill" /></div>
 
-      <nav className="topnav">
-        <span className="wm">Price<b>vane</b></span>
-        <div className="navmid">
-          <a className="navlink" href="#ch1">Monitor</a>
-          <a className="navlink" href="#ch2">Matching</a>
-          <a className="navlink" href="#ch3">Alerts</a>
-          <a className="navlink" href="#pricingSec">Pricing</a>
-          <a className="navlink" href="/architecture">Architecture</a>
-        </div>
-        <div className="navr">
-          <a className="navlink" href="/sign-in">Log in</a>
-          <button className="btn" type="button">Sign up</button>
-        </div>
-      </nav>
+      <SiteNav />
 
       <main id="main">
 
