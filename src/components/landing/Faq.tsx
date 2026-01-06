@@ -60,8 +60,9 @@ export function Faq() {
             aria-controls={`qa-${i}`}
             onClick={() => setOpen(open === i ? null : i)}
           >
-            <span>{q}</span>
-            <Plus size={16} aria-hidden />
+            <span className="qnum" aria-hidden>{String(i + 1).padStart(2, '0')}</span>
+            <span className="qtext">{q}</span>
+            <span className="qicon"><Plus size={16} aria-hidden /></span>
           </button>
           <div className="qbody" id={`qa-${i}`} role="region" hidden={open !== i}>
             <p>{a}</p>

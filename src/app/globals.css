@@ -351,19 +351,37 @@ h1,h2,h3,p{margin:0}
 
 /* ── FAQ ────────────────────────────────────────────────────────────── */
 .faq{border-top:1px solid var(--rule)}
-.qa{margin-top:2.2rem;border-top:1px solid var(--rule)}
-.qitem{border-bottom:1px solid var(--rule)}
-.qitem button{width:100%;display:flex;align-items:center;justify-content:space-between;
-  gap:1.5rem;background:none;border:0;cursor:pointer;text-align:left;padding:1.15rem 0;
-  font-family:var(--fb);font-size:15px;font-weight:600;color:var(--t1);letter-spacing:-.005em}
-.qitem button svg{flex:none;color:var(--t3);transition:transform .2s ease,color .2s ease}
-.qitem.on button svg{transform:rotate(45deg);color:var(--lime)}
-.qitem button:hover svg{color:var(--t1)}
-.qbody p{margin:0;padding:0 0 1.3rem;max-width:70ch;font-size:14px;line-height:1.65;
-  color:var(--t2)}
+.qa{margin-top:2.4rem;border-top:1px solid var(--rule)}
+.qitem{border-bottom:1px solid var(--rule);position:relative}
+/* A lime rule grows down the left edge of the open row -- the same signal the
+   chapter numbers use, so an opened question reads as the active one. */
+.qitem::before{content:'';position:absolute;left:0;top:0;bottom:0;width:2px;
+  background:var(--lime);transform:scaleY(0);transform-origin:top;
+  transition:transform .3s cubic-bezier(.22,1,.36,1)}
+.qitem.on::before{transform:scaleY(1)}
+.qitem button{width:100%;display:grid;grid-template-columns:auto 1fr auto;
+  align-items:center;gap:1.1rem;background:none;border:0;cursor:pointer;
+  text-align:left;padding:1.35rem .2rem 1.35rem 1.4rem;
+  font-family:var(--fb);color:var(--t1);transition:padding-left .28s ease}
+.qitem.on button{padding-left:1.9rem}
+.qnum{font-family:var(--fm);font-size:11px;letter-spacing:.1em;color:var(--t3);
+  transition:color .22s ease}
+.qitem.on .qnum{color:var(--lime)}
+.qtext{font-size:clamp(15px,1.5vw,17px);font-weight:600;letter-spacing:-.008em;
+  line-height:1.35}
+.qicon{width:30px;height:30px;flex:none;border-radius:50%;display:grid;
+  place-items:center;border:1px solid var(--rule2);color:var(--t3);
+  transition:transform .3s cubic-bezier(.22,1,.36,1),border-color .22s ease,
+             color .22s ease,background .22s ease}
+.qitem button:hover .qicon{border-color:var(--t3);color:var(--t1)}
+.qitem.on .qicon{transform:rotate(45deg);border-color:var(--lime);
+  color:#08090A;background:var(--lime)}
+.qbody p{margin:0;padding:0 3rem 1.6rem 1.4rem;max-width:74ch;font-size:14.5px;
+  line-height:1.7;color:var(--t2)}
+.qitem.on .qbody p{padding-left:1.9rem}
 @media(prefers-reduced-motion:no-preference){
-  .qbody{animation:qopen .28s cubic-bezier(.22,1,.36,1) both}
-  @keyframes qopen{from{opacity:0;transform:translateY(-5px)}to{opacity:1;transform:none}}
+  .qbody{animation:qopen .34s cubic-bezier(.22,1,.36,1) both}
+  @keyframes qopen{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:none}}
 }
 
 /* ── CLOSE + FOOT ───────────────────────────────────────────────────── */
