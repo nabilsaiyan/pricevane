@@ -1,7 +1,11 @@
 import Link from 'next/link'
 import { ShieldCheck } from 'lucide-react'
-import { getUsage, getOverview } from '@/lib/data/queries'
+import {
+  getUsage, getOverview, getPriceIndex, getPosition,
+  getSparklines, getCrawlActivity, getMovers,
+} from '@/lib/data/queries'
 import { getActiveOrg } from '@/lib/auth/org'
+import { PriceIndex, PositionBar, Spark, Activity } from '@/components/app/Charts'
 
 export const dynamic = 'force-dynamic'
 
@@ -10,7 +14,20 @@ const when = (s: string) => new Date(s).toLocaleString('en-GB',
   { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' })
 
 export default async function Overview() {
-  const [usage, o, org] = await Promise.all([getUsage(), getOverview(), getActiveOrg()])
+  const [usage, o, org, index, position, sparks, activity, movers] = await Promise.all([
+    getUsage(), getOverview(), getActiveOrg(),
+    getPriceIndex(), getPosition(), getSparklines(), getCrawlActivity(), getMovers(),
+  ]) as [
+    Awaited<ReturnType<typeof getUsage>>, Awaited<ReturnType<typeof getOverview>>,
+    Awaited<ReturnType<typeof getActiveOrg>>,
+    { day: string; tracked: number; winning: number; win_pct: number;
+      median_gap: string | number | null }[],
+    { id: string; title: string; our_price_cents: number; best_rival: number;
+      position: string; gap_pct: number | null }[],
+    { id: string; title: string; our_price_cents: number; series: number[] }[],
+    { day: string; runs: number; failed: number }[],
+    { title: string; store: string; from_cents: number; to_cents: number; pct: number }[],
+  ]
   const pct = usage ? Math.min(100, (usage.tracked_products / usage.max_tracked_products) * 100) : 0
 
   return (
@@ -62,7 +79,101 @@ export default async function Overview() {
         </div>
       </div>
 
+      {/* The chart the product exists for: your price against the cheapest
+          rival, every day of the window. A price-monitoring dashboard without
+          this is a list of numbers pretending to be a product. */}
+      <section className="card chart-card">
+        <header>
+          <h2>How you are placed</h2>
+          <span className="lb">{index.length} days</span>
+        </header>
+        <div className="card-pad"><PriceIndex rows={index} /></div>
+      </section>
+
       <div className="grid2">
+        <section className="card">
+          <header><h2>Where you stand today</h2><span className="lb">{position.length} matched</span></header>
+          <div className="card-pad">
+            <PositionBar rows={position} />
+            <ul className="poslist">
+              {position.slice(0, 5).map(p => (
+                <li key={p.id} className={p.position}>
+                  <span className="pt">{p.title}</span>
+                  <span className="pg">
+                    {p.gap_pct == null ? '—'
+                      : p.gap_pct > 0 ? `+${p.gap_pct}%` : `${p.gap_pct}%`}
+                  </span>
+                </li>
+              ))}
+              {position.length === 0 && <li className="empty">No confirmed matches yet.</li>}
+            </ul>
+          </div>
+        </section>
+
+        <section className="card">
+          <header><h2>Crawl activity</h2><span className="lb">60 days</span></header>
+          <div className="card-pad">
+            <Activity rows={activity} />
+            <p className="chart-note">
+              {activity.reduce((n, r) => n + r.runs, 0)} runs,{' '}
+              {activity.reduce((n, r) => n + r.failed, 0)} with an error.
+            </p>
+          </div>
+        </section>
+      </div>
+
+      <div className="grid2" style={{ marginTop: '1rem' }}>
+        <section className="card">
+          <header><h2>Price trend, 60 days</h2><span className="lb">cheapest rival</span></header>
+          <table className="t">
+            <tbody>
+              {sparks.map(sp => {
+                const last = sp.series[sp.series.length - 1]
+                const beaten = last != null && sp.our_price_cents != null && last < sp.our_price_cents
+                return (
+                  <tr key={sp.id}>
+                    <td style={{ color: 'var(--t1)' }}>{sp.title}</td>
+                    <td style={{ width: 130 }}><Spark series={sp.series} beaten={beaten} /></td>
+                    <td className="n mono" style={{ fontFamily: 'var(--fm)', fontSize: 12,
+                        color: beaten ? 'var(--alert)' : 'var(--t2)' }}>
+                      {money(last)}
+                    </td>
+                  </tr>
+                )
+              })}
+              {sparks.length === 0 && (
+                <tr><td><div className="empty">No matched history yet.</div></td></tr>
+              )}
+            </tbody>
+          </table>
+        </section>
+
+        <section className="card">
+          <header><h2>Biggest movers</h2><span className="lb">14 days</span></header>
+          <table className="t">
+            <tbody>
+              {movers.map((m, i) => (
+                <tr key={i}>
+                  <td style={{ color: 'var(--t1)' }}>{m.title}
+                    <span className="sub">{m.store}</span></td>
+                  <td className="n mono" style={{ fontFamily: 'var(--fm)', fontSize: 12, color: 'var(--t3)' }}>
+                    {money(m.from_cents)} → {money(m.to_cents)}
+                  </td>
+                  <td className="n mono" style={{ fontFamily: 'var(--fm)', fontSize: 12,
+                      color: m.pct < 0 ? 'var(--alert)' : 'var(--lime)' }}>
+                    {m.pct > 0 ? `+${m.pct}` : m.pct}%
+                  </td>
+                </tr>
+              ))}
+              {movers.length === 0 && (
+                <tr><td><div className="empty">Nothing has moved.</div></td></tr>
+              )}
+            </tbody>
+          </table>
+        </section>
+      </div>
+
+      <div className="grid2" style={{ marginTop: '1rem' }}>
         <section className="card">
           <header><h2>Recent alerts</h2><Link href="/app/alerts" className="lb">All →</Link></header>
           {o.alerts.length === 0

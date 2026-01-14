@@ -127,3 +127,29 @@ export async function getAlerts() {
     .order('created_at', { ascending: false }).limit(100)
   return data ?? []
 }
+
+/* ── analytics ──────────────────────────────────────────────────────────
+   Local-only for now. These are multi-CTE aggregates; through Supabase they
+   belong in a view or an RPC rather than being reassembled client-side from
+   PostgREST calls, so the Supabase branch returns empty rather than pretending
+   with a slower, wronger version. */
+export async function getPriceIndex() {
+  const uid = await localUid()
+  return uid ? L.getPriceIndexLocal(uid) : []
+}
+export async function getPosition() {
+  const uid = await localUid()
+  return uid ? L.getPositionLocal(uid) : []
+}
+export async function getSparklines() {
+  const uid = await localUid()
+  return uid ? L.getSparklinesLocal(uid) : []
+}
+export async function getCrawlActivity() {
+  const uid = await localUid()
+  return uid ? L.getCrawlActivityLocal(uid) : []
+}
+export async function getMovers() {
+  const uid = await localUid()
+  return uid ? L.getMoversLocal(uid) : []
+}

@@ -124,3 +124,146 @@ export async function getMembershipsLocal(uid: string) {
      join organizations o on o.id = m.organization_id
      order by m.created_at`)
 }
+
+/* ─────────────────────────────────────────────────────────────────────────
+   ANALYTICS
+   Aggregates for the dashboard. All of them run under withUser(), so RLS
+   scopes every row before the aggregate sees it -- an average computed across
+   another tenant's prices is not a leak we are willing to have.
+
+   In a Supabase deployment these belong in a view or an RPC rather than
+   round-tripping through PostgREST; the shapes below are what that view would
+   need to return.
+   ───────────────────────────────────────────────────────────────────────── */
+
+/**
+ * How you are placed, per day, across the window.
+ *
+ * The first version of this averaged our prices across every product and
+ * compared that to the minimum price across every listing -- a desk lamp
+ * against a standing desk. That comparison is meaningless and, worse, it is
+ * meaningless in a way that always looks alarming: a minimum over a mixed
+ * basket is always below a mean over the same basket, so it reported 0% of
+ * days cheapest no matter how the business was actually doing.
+ *
+ * The comparison has to be per product and then aggregated. For each day and
+ * each tracked product with a confirmed match, we compare our price to the
+ * cheapest rival for that same product, and report the share of products we
+ * won plus the median gap.
+ */
+export async function getPriceIndexLocal(uid: string, days = 183) {
+  return queryAs(uid,
+    `with snap as (
+       select date_trunc('day', s.captured_at)::date as d,
+              m.product_id,
+              min(s.price_cents) as best_rival
+       from price_snapshots s
+       join product_matches m
+         on m.listing_id = s.listing_id and m.status = 'confirmed'
+       where s.captured_at >= now() - ($1 || ' days')::interval
+       group by 1, 2
+     ),
+     joined as (
+       select snap.d, p.our_price_cents as ours, snap.best_rival,
+              ((p.our_price_cents - snap.best_rival)::numeric
+                / nullif(snap.best_rival, 0)) * 100 as gap
+       from snap
+       join products p on p.id = snap.product_id
+       where p.is_tracked and p.our_price_cents is not null
+     )
+     select d::text as day,
+            count(*)::int as tracked,
+            count(*) filter (where ours <= best_rival)::int as winning,
+            round((count(*) filter (where ours <= best_rival)::numeric
+                   / nullif(count(*), 0)) * 100)::int as win_pct,
+            round(percentile_cont(0.5) within group (order by gap)::numeric, 1) as median_gap
+     from joined
+     group by d order by d`, [String(days)])
+}
+
+/** Where you sit today: cheapest, level, or beaten -- per tracked product. */
+export async function getPositionLocal(uid: string) {
+  return queryAs(uid,
+    `with latest as (
+       select distinct on (s.listing_id) s.listing_id, s.price_cents
+       from price_snapshots s
+       order by s.listing_id, s.captured_at desc
+     ),
+     per_product as (
+       select p.id, p.title, p.our_price_cents,
+              min(l.price_cents) as best_rival
+       from products p
+       join product_matches m on m.product_id = p.id and m.status = 'confirmed'
+       join latest l on l.listing_id = m.listing_id
+       where p.is_tracked and p.our_price_cents is not null
+       group by p.id, p.title, p.our_price_cents
+     )
+     select id, title, our_price_cents, best_rival,
+            case when best_rival is null then 'unknown'
+                 when our_price_cents < best_rival then 'cheapest'
+                 when our_price_cents = best_rival then 'level'
+                 else 'beaten' end as position,
+            case when best_rival is null or best_rival = 0 then null
+                 else round(((our_price_cents - best_rival)::numeric
+                              / best_rival) * 100, 1) end as gap_pct
+     from per_product order by gap_pct desc nulls last`)
+}
+
+/** A 60-day sparkline of the cheapest rival price, per tracked product. */
+export async function getSparklinesLocal(uid: string, days = 60) {
+  return queryAs(uid,
+    `select p.id, p.title, p.our_price_cents,
+            array_agg(x.low order by x.d) as series
+     from products p
+     join lateral (
+       select date_trunc('day', s.captured_at)::date as d,
+              min(s.price_cents) as low
+       from product_matches m
+       join price_snapshots s on s.listing_id = m.listing_id
+       where m.product_id = p.id and m.status = 'confirmed'
+         and s.captured_at >= now() - ($1 || ' days')::interval
+       group by 1
+     ) x on true
+     where p.is_tracked
+     group by p.id, p.title, p.our_price_cents
+     having count(x.d) > 3
+     order by p.title`, [String(days)])
+}
+
+/** Crawl volume per day, for the activity strip. */
+export async function getCrawlActivityLocal(uid: string, days = 60) {
+  return queryAs(uid,
+    `select date_trunc('day', started_at)::date::text as day,
+            count(*)::int as runs,
+            count(*) filter (where status <> 'succeeded')::int as failed
+     from crawl_runs
+     where started_at >= now() - ($1 || ' days')::interval
+     group by 1 order by 1`, [String(days)])
+}
+
+/** The largest movers over the window, by percentage. */
+export async function getMoversLocal(uid: string, days = 14) {
+  return queryAs(uid,
+    `with bounds as (
+       select s.listing_id,
+              min(s.captured_at) as first_at,
+              max(s.captured_at) as last_at
+       from price_snapshots s
+       where s.captured_at >= now() - ($1 || ' days')::interval
+       group by s.listing_id
+     )
+     select l.title, st.name as store,
+            f.price_cents as from_cents, t.price_cents as to_cents,
+            round(((t.price_cents - f.price_cents)::numeric
+                    / nullif(f.price_cents,0)) * 100, 1) as pct
+     from bounds b
+     join price_snapshots f on f.listing_id = b.listing_id and f.captured_at = b.first_at
+     join price_snapshots t on t.listing_id = b.listing_id and t.captured_at = b.last_at
+     join competitor_listings l on l.id = b.listing_id
+     join competitor_stores   st on st.id = l.store_id
+     where f.price_cents is not null and t.price_cents is not null
+       and f.price_cents <> t.price_cents
+     order by abs(((t.price_cents - f.price_cents)::numeric
+                    / nullif(f.price_cents,0))) desc
+     limit 8`, [String(days)])
+}
