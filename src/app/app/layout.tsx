@@ -1,6 +1,6 @@
 import Link from 'next/link'
 import { redirect } from 'next/navigation'
-import { LayoutDashboard, Package, Store, GitCompareArrows, Bell, CreditCard, ShieldCheck } from 'lucide-react'
+import { LayoutDashboard, Package, Store, GitCompareArrows, Bell, CreditCard, Settings2, ShieldCheck } from 'lucide-react'
 import { getMemberships, getActiveOrg } from '@/lib/auth/org'
 import { isSupabaseConfigured } from '@/lib/supabase/config'
 import { SetupNotice } from '@/components/app/SetupNotice'
@@ -15,6 +15,7 @@ const NAV = [
   { href: '/app/matches', label: 'Matches', Icon: GitCompareArrows },
   { href: '/app/alerts', label: 'Alerts', Icon: Bell },
   { href: '/app/billing', label: 'Billing', Icon: CreditCard },
+  { href: '/app/settings', label: 'Settings', Icon: Settings2 },
 ] as const
 
 export default async function AppLayout({ children }: { children: React.ReactNode }) {

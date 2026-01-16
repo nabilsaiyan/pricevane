@@ -153,3 +153,24 @@ export async function getMovers() {
   const uid = await localUid()
   return uid ? L.getMoversLocal(uid) : []
 }
+
+/* ── settings and actions ───────────────────────────────────────────────── */
+export async function getSettings() {
+  const uid = await localUid()
+  return uid ? L.getSettingsLocal(uid) : null
+}
+export async function saveSettings(p: Parameters<typeof L.saveSettingsLocal>[1]) {
+  const uid = await localUid()
+  if (!uid) return 0
+  return L.saveSettingsLocal(uid, p)
+}
+export async function decideMatch(id: string, decision: 'confirmed' | 'rejected') {
+  const uid = await localUid()
+  if (!uid) return 0
+  return L.decideMatchLocal(uid, id, decision)
+}
+export async function markAlertsRead() {
+  const uid = await localUid()
+  if (!uid) return 0
+  return L.markAlertsReadLocal(uid)
+}

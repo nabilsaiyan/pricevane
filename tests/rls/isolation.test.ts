@@ -276,3 +276,51 @@ describe('demo access', () => {
     })
   })
 })
+
+/**
+ * RLS scopes rows. It cannot hide a column.
+ *
+ * Two tables carry a secret a member of the owning organisation has every
+ * right to *write* and no reason to read back: a webhook signing secret and a
+ * vendor API key. Both were readable, because the schema granted SELECT on the
+ * whole table and then tried to revoke one column -- which Postgres accepts
+ * and ignores, since a table-level grant is a distinct, broader privilege
+ * rather than shorthand for the column set.
+ *
+ * The failure was silent, which is why it survived: every row-level assertion
+ * above still passed. These assert the column grants directly.
+ */
+describe('secret columns', () => {
+  it('does not let a member read a webhook secret', async () => {
+    await asUser(ids.userA, async () => {
+      await expect(
+        client.query('select secret from notification_channels'),
+      ).rejects.toThrow(/permission denied/i)
+    })
+  })
+
+  it('does not let a member read a stored vendor API key', async () => {
+    await asUser(ids.userA, async () => {
+      await expect(
+        client.query('select api_key_enc from organization_settings'),
+      ).rejects.toThrow(/permission denied/i)
+    })
+  })
+
+  it('still exposes the columns an interface legitimately needs', async () => {
+    await asUser(ids.userA, async () => {
+      const { rows } = await client.query(
+        'select match_provider, match_model, api_key_hint from organization_settings')
+      expect(rows).toHaveLength(1)
+      expect(rows[0].match_provider).toBe('anthropic')
+    })
+  })
+
+  it('refuses a select * that would sweep the secret up with everything else', async () => {
+    await asUser(ids.userA, async () => {
+      await expect(
+        client.query('select * from organization_settings'),
+      ).rejects.toThrow(/permission denied/i)
+    })
+  })
+})

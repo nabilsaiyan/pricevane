@@ -4,6 +4,8 @@ import { revalidatePath } from 'next/cache'
 import { cookies } from 'next/headers'
 import { getSupabaseServer } from '@/lib/supabase/server'
 import { getMemberships, ACTIVE_ORG_COOKIE } from '@/lib/auth/org'
+import { isLocalAuth, getLocalUserId } from '@/lib/auth/local'
+import { decideMatch, markAlertsRead as markReadQ } from '@/lib/data/queries'
 
 /**
  * Switch the active organization.
@@ -36,6 +38,15 @@ export async function reviewMatch(formData: FormData) {
   const verdict = String(formData.get('verdict') ?? '')
   if (verdict !== 'confirmed' && verdict !== 'rejected') return
 
+  // Local development has no PostgREST. Same statement, same policies -- the
+  // UPDATE runs under withUser(), so a forged id from another tenant still
+  // updates zero rows.
+  if (isLocalAuth()) {
+    await decideMatch(id, verdict)
+    revalidatePath('/app/matches')
+    return
+  }
+
   const supabase = await getSupabaseServer()
   const { data: { user } } = await supabase.auth.getUser()
 
@@ -58,4 +69,27 @@ export async function reviewMatch(formData: FormData) {
   }
 
   revalidatePath('/app/matches')
+}
+
+/**
+ * Mark every unread alert as read.
+ *
+ * No id list and no tenant filter: the statement says "every unread alert",
+ * and RLS decides whose. Passing ids would mean trusting the page to have
+ * listed the right ones.
+ */
+export async function markAlertsRead() {
+  if (isLocalAuth()) {
+    if (!(await getLocalUserId())) return
+    await markReadQ()
+    revalidatePath('/app/alerts')
+    revalidatePath('/app')
+    return
+  }
+  const supabase = await getSupabaseServer()
+  await supabase.from('alerts')
+    .update({ read_at: new Date().toISOString() })
+    .is('read_at', null)
+  revalidatePath('/app/alerts')
+  revalidatePath('/app')
 }
