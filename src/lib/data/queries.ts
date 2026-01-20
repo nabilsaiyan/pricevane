@@ -129,29 +129,48 @@ export async function getAlerts() {
 }
 
 /* ── analytics ──────────────────────────────────────────────────────────
-   Local-only for now. These are multi-CTE aggregates; through Supabase they
-   belong in a view or an RPC rather than being reassembled client-side from
-   PostgREST calls, so the Supabase branch returns empty rather than pretending
-   with a slower, wronger version. */
+   Both paths call the same database functions (migration 0009): locally
+   through pg, and through PostgREST's /rpc endpoint once Supabase credentials
+   are present. There is one definition of each aggregate, in the database, so
+   switching environments cannot change what a number means.
+
+   The functions are SECURITY INVOKER, so RLS filters rows before the aggregate
+   sees them either way. */
+async function rpc<T>(name: string, args: Record<string, unknown> = {}): Promise<T[]> {
+  if (!isSupabaseConfigured()) return []
+  const s = await getSupabaseServer()
+  const { data, error } = await s.rpc(name, args)
+  if (error) throw error
+  return (data ?? []) as T[]
+}
+
 export async function getPriceIndex() {
   const uid = await localUid()
-  return uid ? L.getPriceIndexLocal(uid) : []
+  return uid ? L.getPriceIndexLocal(uid) : rpc('pv_placement', { days: 183 })
 }
 export async function getPosition() {
   const uid = await localUid()
-  return uid ? L.getPositionLocal(uid) : []
+  return uid ? L.getPositionLocal(uid) : rpc('pv_position')
 }
 export async function getSparklines() {
   const uid = await localUid()
-  return uid ? L.getSparklinesLocal(uid) : []
+  return uid ? L.getSparklinesLocal(uid) : rpc('pv_sparklines', { days: 60 })
 }
 export async function getCrawlActivity() {
   const uid = await localUid()
-  return uid ? L.getCrawlActivityLocal(uid) : []
+  return uid ? L.getCrawlActivityLocal(uid) : rpc('pv_crawl_activity', { days: 60 })
 }
 export async function getMovers() {
   const uid = await localUid()
-  return uid ? L.getMoversLocal(uid) : []
+  return uid ? L.getMoversLocal(uid) : rpc('pv_movers', { days: 14 })
+}
+export async function getAlertBreakdown() {
+  const uid = await localUid()
+  return uid ? L.getAlertBreakdownLocal(uid) : rpc('pv_alert_breakdown', { days: 84 })
+}
+export async function getStoreBreakdown() {
+  const uid = await localUid()
+  return uid ? L.getStoreBreakdownLocal(uid) : rpc('pv_store_breakdown')
 }
 
 /* ── settings and actions ───────────────────────────────────────────────── */

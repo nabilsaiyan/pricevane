@@ -79,8 +79,13 @@ table.t tbody tr:hover{background:rgba(255,255,255,.015)}
    1000 cap is 0.8% -- and a bar that thin renders as an empty track, which
    reads as broken rather than as "barely used". A minimum keeps the fill
    legible without misreporting: the number beside it is always the truth. */
+/* A real usage figure can be a fraction of a percent -- 8 products against a
+   1000 cap is 0.8%, which rounds to nothing and renders as an empty track that
+   reads as broken rather than as "barely used". The fill keeps a visible
+   minimum; the figure printed beside it is always the truth. */
+.meter{position:relative}
 .meter i{display:block;height:100%;background:var(--lime);border-radius:99px;
-  min-width:6px;transition:width .6s cubic-bezier(.22,1,.36,1)}
+  min-width:10px;transition:width .6s cubic-bezier(.22,1,.36,1)}
 .meter i.hot{background:var(--alert)}
 
 .btn2{display:inline-flex;align-items:center;gap:.4rem;background:var(--lime);color:#08090A;

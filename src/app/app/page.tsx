@@ -3,9 +3,13 @@ import { ShieldCheck } from 'lucide-react'
 import {
   getUsage, getOverview, getPriceIndex, getPosition,
   getSparklines, getCrawlActivity, getMovers,
+  getAlertBreakdown, getStoreBreakdown,
 } from '@/lib/data/queries'
 import { getActiveOrg } from '@/lib/auth/org'
-import { PriceIndex, PositionBar, Spark, Activity } from '@/components/app/Charts'
+import {
+  PlacementChart, GapChart, ActivityChart, AlertsChart, StoreChart,
+  PositionBar, Spark,
+} from '@/components/app/Charts'
 
 export const dynamic = 'force-dynamic'
 
@@ -14,9 +18,11 @@ const when = (s: string) => new Date(s).toLocaleString('en-GB',
   { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' })
 
 export default async function Overview() {
-  const [usage, o, org, index, position, sparks, activity, movers] = await Promise.all([
+  const [usage, o, org, index, position, sparks, activity, movers,
+         alertMix, storeMix] = await Promise.all([
     getUsage(), getOverview(), getActiveOrg(),
     getPriceIndex(), getPosition(), getSparklines(), getCrawlActivity(), getMovers(),
+    getAlertBreakdown(), getStoreBreakdown(),
   ]) as [
     Awaited<ReturnType<typeof getUsage>>, Awaited<ReturnType<typeof getOverview>>,
     Awaited<ReturnType<typeof getActiveOrg>>,
@@ -27,6 +33,8 @@ export default async function Overview() {
     { id: string; title: string; our_price_cents: number; series: number[] }[],
     { day: string; runs: number; failed: number }[],
     { title: string; store: string; from_cents: number; to_cents: number; pct: number }[],
+    { week: string; critical: number; warning: number; info: number }[],
+    { store: string; listings: number; cheapest_on: number }[],
   ]
   const pct = usage ? Math.min(100, (usage.tracked_products / usage.max_tracked_products) * 100) : 0
 
@@ -87,7 +95,7 @@ export default async function Overview() {
           <h2>How you are placed</h2>
           <span className="lb">{index.length} days</span>
         </header>
-        <div className="card-pad"><PriceIndex rows={index} /></div>
+        <div className="card-pad"><PlacementChart rows={index} /></div>
       </section>
 
       <div className="grid2">
@@ -95,7 +103,8 @@ export default async function Overview() {
           <header><h2>Where you stand today</h2><span className="lb">{position.length} matched</span></header>
           <div className="card-pad">
             <PositionBar rows={position} />
-            <ul className="poslist">
+            <GapChart rows={position} />
+            <ul className="poslist" hidden>
               {position.slice(0, 5).map(p => (
                 <li key={p.id} className={p.position}>
                   <span className="pt">{p.title}</span>
@@ -113,10 +122,29 @@ export default async function Overview() {
         <section className="card">
           <header><h2>Crawl activity</h2><span className="lb">60 days</span></header>
           <div className="card-pad">
-            <Activity rows={activity} />
+            <ActivityChart rows={activity} />
             <p className="chart-note">
               {activity.reduce((n, r) => n + r.runs, 0)} runs,{' '}
               {activity.reduce((n, r) => n + r.failed, 0)} with an error.
+            </p>
+          </div>
+        </section>
+      </div>
+
+      <div className="grid2" style={{ marginTop: '1rem' }}>
+        <section className="card">
+          <header><h2>Competitor stores</h2><span className="lb">matched listings</span></header>
+          <div className="card-pad"><StoreChart rows={storeMix} /></div>
+        </section>
+
+        <section className="card">
+          <header><h2>Alerts by severity</h2><span className="lb">12 weeks</span></header>
+          <div className="card-pad">
+            <AlertsChart rows={alertMix} />
+            <p className="chart-note">
+              {alertMix.reduce((n, r) => n + r.critical + r.warning + r.info, 0)} alerts
+              in this window. Sparse because the engine has been run once against
+              the seeded history, not nightly.
             </p>
           </div>
         </section>
