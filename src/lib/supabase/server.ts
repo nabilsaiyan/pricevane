@@ -1,5 +1,6 @@
 import { createServerClient } from '@supabase/ssr'
 import { cookies } from 'next/headers'
+import { supabaseUrl, supabasePublicKey } from './config'
 
 /**
  * Request-scoped Supabase client carrying the user's session.
@@ -12,8 +13,8 @@ import { cookies } from 'next/headers'
 export async function getSupabaseServer() {
   const store = await cookies()
   return createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    supabaseUrl()!,
+    supabasePublicKey()!,
     {
       cookies: {
         getAll: () => store.getAll(),

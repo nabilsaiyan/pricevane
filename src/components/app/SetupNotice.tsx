@@ -35,7 +35,7 @@ export function SetupNotice() {
             cp .env.example .env.local{'\n'}
             <span style={{ color: 'var(--t3)' }}># then fill in, from Supabase &gt; Settings &gt; API:</span>{'\n'}
             <span style={{ color: 'var(--lime)' }}>NEXT_PUBLIC_SUPABASE_URL</span>{'\n'}
-            <span style={{ color: 'var(--lime)' }}>NEXT_PUBLIC_SUPABASE_ANON_KEY</span>{'\n'}
+            <span style={{ color: 'var(--lime)' }}>NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY</span>{'\n'}
             <span style={{ color: 'var(--lime)' }}>DATABASE_URL</span>{'  '}
             <span style={{ color: 'var(--t3)' }}># Settings &gt; Database</span>
           </code>

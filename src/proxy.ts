@@ -1,6 +1,6 @@
 import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
-import { isSupabaseConfigured } from '@/lib/supabase/config'
+import { isSupabaseConfigured, supabaseUrl, supabasePublicKey } from '@/lib/supabase/config'
 
 /**
  * Refreshes the Supabase session cookie on every matched request.
@@ -33,8 +33,8 @@ export async function proxy(request: NextRequest) {
   if (!isSupabaseConfigured()) return response
 
   const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    supabaseUrl()!,
+    supabasePublicKey()!,
     {
       cookies: {
         getAll: () => request.cookies.getAll(),
