@@ -26,10 +26,21 @@ async function main() {
   try {
     await c.query('begin')
     for (const { email, slug } of USERS) {
-      const u = await c.query(
-        `insert into auth.users (email) values ($1)
-         on conflict (email) do update set email = excluded.email
-         returning id`, [email])
+      // Look the identity up; never create it.
+      //
+      // This used to upsert into auth.users with `on conflict (email)`, which
+      // works against the local shim -- where email is plainly unique -- and
+      // fails on a real Supabase project, where auth.users enforces email
+      // uniqueness through a partial index that ON CONFLICT cannot infer an
+      // arbiter from. It is also the wrong shape regardless: on a real project
+      // the identity is created by the auth service, and a row this script
+      // invented would have no password, no confirmation and no way to sign in.
+      const u = await c.query('select id from auth.users where email = $1', [email])
+      if (u.rowCount === 0) {
+        console.warn(`  no auth user for ${email} — create it first ` +
+                     `(locally: the shim; on Supabase: auth/v1/admin/users)`)
+        continue
+      }
       const userId = u.rows[0].id as string
 
       const org = await c.query('select id, name from organizations where slug = $1', [slug])
