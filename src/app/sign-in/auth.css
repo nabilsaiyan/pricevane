@@ -1,18 +1,19 @@
 .authwrap{min-height:100svh;display:grid;place-items:center;padding:1.5rem;background:var(--ink)}
 .authcard{width:100%;max-width:380px;background:var(--s1);border:1px solid var(--rule2);
   border-radius:6px;padding:1.8rem}
-.brandline{font-family:var(--fm);font-size:11px;letter-spacing:.26em;text-transform:uppercase;
-  color:var(--t1);display:block;margin-bottom:1.6rem}
-.brandline b{color:var(--lime);font-weight:400}
-.authcard h1{font-size:1.85rem;font-variation-settings:'wdth' 118,'wght' 700;letter-spacing:-.035em}
-.note{color:var(--t2);font-size:13px;margin:.55rem 0 1.4rem;line-height:1.5}
-.lbl{font-family:var(--fm);font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;
+.brandline{display:flex;align-items:center;gap:.6rem;font-family:var(--fb);font-size:20px;
+  font-weight:750;letter-spacing:-.02em;color:var(--t1);margin-bottom:1.6rem}
+.brandline svg{flex:none}
+.brandline b{color:var(--lime);font-weight:750}
+.authcard h1{font-size:1.85rem;font-weight:750;font-variation-settings:'opsz' 30;letter-spacing:-.035em}
+.note{color:var(--t2);font-size:14px;margin:.55rem 0 1.4rem;line-height:1.5}
+.lbl{font-family:var(--fm);font-size:11.5px;letter-spacing:.16em;text-transform:uppercase;
   color:var(--t3);display:block;margin-bottom:.4rem}
 .inp{width:100%;background:var(--ink);border:1px solid var(--rule2);border-radius:4px;
   padding:.65rem .75rem;color:var(--t1);font-family:var(--fb);font-size:14px;margin-bottom:1rem}
 .inp:focus{outline:none;border-color:var(--lime)}
 .btn3{width:100%;background:var(--lime);color:#08090A;border:0;padding:.7rem;border-radius:3px;
-  font-family:var(--fb);font-size:13.5px;font-weight:700;cursor:pointer}
+  font-family:var(--fb);font-size:14px;font-weight:700;cursor:pointer}
 .btn3:focus-visible{outline:2px solid var(--t1);outline-offset:2px}
 
 /* ---- development sign-in -------------------------------------------------
@@ -20,7 +21,7 @@
    tool rather than a product screen, so nobody mistakes it for the real
    sign-in flow. */
 .authcard.wide{max-width:560px;text-align:left}
-.signin .eyebrow{display:block;font-family:var(--fm);font-size:10px;letter-spacing:.18em;
+.signin .eyebrow{display:block;font-family:var(--fm);font-size:11.5px;letter-spacing:.18em;
   text-transform:uppercase;color:var(--t3);margin-bottom:.8rem}
 .signin .h2{font-size:1.7rem;margin:0 0 .8rem}
 .signin .lede{font-size:14px;line-height:1.6;color:var(--t2);margin:0 0 1.6rem;max-width:52ch}
@@ -30,17 +31,17 @@
   background:var(--s1);border:1px solid var(--rule2);border-radius:8px;
   padding:.9rem 1rem;text-align:left;transition:border-color .18s ease,background .18s ease}
 .idcard:hover{border-color:var(--lime);background:var(--s2)}
-.idcard i{font-style:normal;font-family:var(--fm);font-size:11px;width:34px;height:34px;
+.idcard i{font-style:normal;font-family:var(--fm);font-size:12px;width:34px;height:34px;
   flex:none;border-radius:50%;border:1px solid var(--rule2);display:grid;place-items:center;
   color:var(--t1);background:var(--s2)}
 .idcard span{display:flex;flex-direction:column;gap:.15rem;flex:1}
-.idcard b{font-size:13.5px;font-weight:600;color:var(--t1)}
-.idcard span{font-family:var(--fm);font-size:11px;color:var(--t3)}
-.idcard em{font-style:normal;font-family:var(--fm);font-size:11px;color:var(--lime)}
+.idcard b{font-size:14px;font-weight:600;color:var(--t1)}
+.idcard span{font-family:var(--fm);font-size:12px;color:var(--t3)}
+.idcard em{font-style:normal;font-family:var(--fm);font-size:12px;color:var(--lime)}
 
 .note.err{color:var(--alert)}
 .orline{display:flex;align-items:center;gap:.8rem;margin:1.4rem 0 1rem;
-  font-family:var(--fm);font-size:10px;letter-spacing:.18em;text-transform:uppercase;
+  font-family:var(--fm);font-size:11.5px;letter-spacing:.18em;text-transform:uppercase;
   color:var(--t3)}
 .orline::before,.orline::after{content:'';flex:1;height:1px;background:var(--rule)}
 .btn3.ghost{background:transparent;color:var(--t1);border:1px solid var(--rule2)}

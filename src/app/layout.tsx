@@ -1,28 +1,31 @@
 import type { Metadata } from 'next'
-import { Archivo, Geist, Geist_Mono } from 'next/font/google'
+import { Inter, Spline_Sans_Mono } from 'next/font/google'
 import './globals.css'
 
-// Archivo carries a real width axis (62–125). The display voice is the same
-// family at wdth 125 rather than a second typeface — hierarchy from width.
-const archivo = Archivo({
+/**
+ * Inter, with the optical-size axis.
+ *
+ * The reference sets body copy in InterVariable and headings in InterDisplay --
+ * two cuts of one superfamily, self-hosted. Google now serves Inter v4 with the
+ * `opsz` axis exposed (14-32), which is the same distinction from a single
+ * file: at opsz 14-20 the letterforms are the text cut, at 28-32 they tighten
+ * into the display cut. So `--fu` and `--fb` below are the same family at
+ * different optical sizes rather than two downloads.
+ *
+ * This replaces Archivo + Geist. Archivo is an expanded grotesque and was a
+ * poor UI face; Geist and Archivo together had no relationship to each other.
+ */
+const inter = Inter({
   subsets: ['latin'],
-  axes: ['wdth'],
-  variable: '--font-archivo',
+  axes: ['opsz'],
+  variable: '--font-inter',
   display: 'swap',
 })
 
-// The UI face. Archivo carries a width axis and is a display type; setting
-// body copy, navigation and buttons in it was a real mistake -- an expanded
-// grotesque is exhausting below about 20px. Archivo now does headings only.
-const geist = Geist({
+// The label and figure voice. Also what the reference uses for its mono.
+const mono = Spline_Sans_Mono({
   subsets: ['latin'],
-  variable: '--font-geist',
-  display: 'swap',
-})
-
-const geistMono = Geist_Mono({
-  subsets: ['latin'],
-  variable: '--font-geist-mono',
+  variable: '--font-mono',
   display: 'swap',
 })
 
@@ -35,7 +38,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={`${archivo.variable} ${geist.variable} ${geistMono.variable}`}>
+    <html lang="en" className={`${inter.variable} ${mono.variable}`}>
       <body>{children}</body>
     </html>
   )

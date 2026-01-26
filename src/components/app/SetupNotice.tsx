@@ -17,7 +17,7 @@ export function SetupNotice() {
           Price<b style={{ color: 'var(--lime)', fontWeight: 400 }}>vane</b>
         </span>
 
-        <h1 style={{ fontSize: '1.7rem', fontVariationSettings: "'wdth' 116, 'wght' 700",
+        <h1 style={{ fontSize: '1.7rem', fontWeight: 750, fontVariationSettings: "'opsz' 30",
                      letterSpacing: '-.035em', margin: '1.4rem 0 .6rem' }}>
           The app needs a database.
         </h1>
