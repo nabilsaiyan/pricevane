@@ -1,0 +1,265 @@
+/* ═══ SCROLL CHOREOGRAPHY ═══════════════════════════════════════════════
+   Native CSS scroll-driven animation: `animation-timeline: view()` binds
+   progress to where the element sits in the scrollport, so a reveal is
+   scrubbed by the scroll rather than played on its own clock.
+
+   ── The rule that shapes this whole file ──
+   Only `transform` and `opacity` are ever scrubbed. Nothing else.
+
+   The previous pass scrubbed `filter: blur()` and animated `clip-path`, and
+   both are wrong for the same reason: they force a paint-and-composite cycle
+   on every scroll frame, and the browser cannot cache a filtered layer the way
+   it caches a transformed one. On a large display -- more pixels, same frame
+   budget -- that drops frames, and a dropped frame in a scrubbed blur is
+   visible as the sharp content showing through underneath. That is the
+   artefact, and no amount of tuning the radius fixes it; the fix is not to
+   scrub a filter. Blur is still here (see .soft-in below), but as a one-shot
+   transition fired once on entry, off the scroll timeline entirely.
+
+   ── Ranges are lengths, not percentages ──
+   `entry 8% entry 58%` sounds screen-independent and is not: the entry range
+   is as long as the element, so a tall figure stayed unresolved for hundreds
+   of pixels of scrolling. Every range below is written in px against `cover`,
+   so an element resolves a fixed distance after it appears no matter how tall
+   the window is. That is what makes this behave the same on a 27" display as
+   on a laptop.
+
+   ── Easing ──
+   `linear` is banned: a scrub with no curve reads as mechanical. Everything
+   uses a strong decelerating curve, so most of the movement is spent in the
+   first third of the range and the element is settled well before it reaches
+   the reading zone.
+
+   ── One trap worth naming ──
+   `overflow: hidden` on any ancestor makes it a scroll container, and view()
+   resolves against the nearest scroll container. A wrapper that only meant to
+   clip its rounded corners then owns the timeline, never scrolls, and leaves
+   everything inside it frozen at the from-state -- invisible, permanently.
+   `.ngrid` did exactly this and hid a statistic. Clipping wrappers use
+   `overflow: clip` for this reason; check it before adding a reveal.
+
+   SAFETY: every animation is `both`-filled inside
+   @supports (animation-timeline: view()), and the whole file is behind
+   prefers-reduced-motion. A browser without the feature gets the static page
+   plus LandingMotion's ScrollTrigger mirror. Nothing here is ever the only
+   thing between the reader and the content. */
+
+/* Anything that flattens the viewport to the document height -- an OG image
+   service, a print or PDF render, a visual-regression snapshot -- makes every
+   view() timeline inactive at once, and `both` fill then holds every reveal at
+   its from-state. The page comes out blank. LandingMotion sets .no-scroll when
+   the document cannot meaningfully scroll, and print is handled outright. */
+html.no-scroll .band *, html.no-scroll .band {
+  animation: none !important; opacity: 1 !important;
+  transform: none !important; filter: none !important;
+}
+@media print {
+  *, *::before, *::after {
+    animation: none !important; transition: none !important;
+    opacity: 1 !important; transform: none !important; filter: none !important;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+
+  /* ── the one-shot blur ────────────────────────────────────────────────
+     Not scrubbed. LandingMotion marks the elements and flips `.soft-seen`
+     once, via IntersectionObserver; this transitions for 700ms and is then
+     done forever. `.motion-ready` is added by that same effect, so if the
+     bundle never runs, nothing is ever blurred. */
+  .motion-ready .soft-in {
+    filter: blur(13px);
+    transition: filter .7s cubic-bezier(.16, 1, .3, 1);
+    will-change: filter;
+  }
+  .motion-ready .soft-in.soft-seen { filter: blur(0); will-change: auto }
+  /* Filters are the most expensive thing on a phone GPU and the least
+     visible on a small screen. Not worth it. */
+  @media (max-width: 900px) { .motion-ready .soft-in { filter: none; transition: none } }
+
+  @supports (animation-timeline: view()) {
+
+    /* ── primitives ─────────────────────────────────────────────────────
+       Opacity and transform are animated SEPARATELY, on their own ranges and
+       their own curves. That split is the whole trick here.
+
+       Previously both rode one animation with a hard front-loaded curve, and
+       the two goals fought: the curve that stops content sitting half-arrived
+       also collapses the growth into the first fifth of the range, so the
+       scale-up was over before it was visible. Now opacity resolves fast --
+       the copy is readable almost immediately -- while the scale keeps opening
+       across three times the distance, so the growth is something you watch
+       happen rather than something you catch the end of. */
+    @keyframes fadeUp   { from { opacity: 0 } to { opacity: 1 } }
+    @keyframes growBig  { from { transform: translate3d(0,96px,0) scale(.52) rotate(-1.2deg) }
+                      to   { transform: none } }
+    @keyframes growCard { from { transform: translate3d(0,74px,0) scale(.64) rotate(1.4deg) }
+                      to   { transform: none } }
+    @keyframes riseText { from { transform: translate3d(0,40px,0) scale(.90) } to { transform: none } }
+    @keyframes riseHead { from { transform: translate3d(0,64px,0) scale(.74) } to { transform: none } }
+    @keyframes popSmall { from { transform: translate3d(0,24px,0) scale(.55) } to { transform: none } }
+    @keyframes dropIn   { from { transform: scale(1.75) rotate(-6deg) } to { transform: none } }
+    @keyframes unblur   { from { filter: blur(22px) } to { filter: blur(0) } }
+    @keyframes drawRule { from { transform: scaleX(0) } to { transform: scaleX(1) } }
+    @keyframes drift    { from { transform: translate3d(0,-7%,0) } to { transform: translate3d(0,7%,0) } }
+
+    /* --e-in: opacity, front-loaded, so nothing is unreadable for long.
+       --e-grow: scale, spread across the range, so the gesture is legible. */
+    :root { --e-in: cubic-bezier(.16,1,.3,1); --e-grow: cubic-bezier(.5,.06,.55,1) }
+
+    .cmedia, .cclip, .scard, .ptier, .nbox, .cpoint { transform-origin: 50% 85% }
+
+    /* ── the reveal ─────────────────────────────────────────────────────
+       Two animations per element. Opacity is done inside ~260px; the scale
+       keeps opening for 700-900px, which on any screen is most of a viewport
+       of scrolling -- long enough to actually see. */
+    .band:not(.hero) .eyebrow, .band:not(.hero) .chiptitle,
+    .band:not(.hero) > .h2, .chapter .h2,
+    .band:not(.hero) > .lede, .chapter .lede,
+    .chapter .chead, .cpoint, .chip, .cmedia, .cclip, .clink,
+    .scard, .ptier, .nbox, .wall span, .qitem,
+    .quote blockquote, .quote .qmark, .quote .qwho,
+    .footcol, .footbrand {
+      animation-name: fadeUp, riseText;
+      animation-timeline: view(), view();
+      animation-fill-mode: both, both;
+      animation-timing-function: var(--e-in), var(--e-grow);
+      animation-range: cover 20px cover 240px, cover 20px cover 900px;
+    }
+
+    .band:not(.hero) > .h2, .chapter .h2 {
+      animation-name: fadeUp, riseHead;
+      animation-range: cover 30px cover 260px, cover 30px cover 1050px;
+    }
+    .band:not(.hero) > .lede, .chapter .lede {
+      animation-range: cover 50px cover 280px, cover 50px cover 900px;
+    }
+    .chapter .chead { animation-range: cover 10px cover 200px, cover 10px cover 760px }
+
+    .cpoint {
+      animation-name: fadeUp, growCard;
+      animation-range: cover 40px cover 280px, cover 40px cover 1100px;
+    }
+    .cpoint:nth-child(2) { animation-range: cover 75px cover 315px, cover 75px cover 1135px }
+    .cpoint:nth-child(3) { animation-range: cover 110px cover 350px, cover 110px cover 1170px }
+
+    .chip {
+      animation-name: fadeUp, popSmall;
+      animation-range: cover 40px cover 220px, cover 40px cover 460px;
+    }
+    .chip:nth-child(2n) { animation-range: cover 62px cover 242px, cover 62px cover 482px }
+    .chip:nth-child(3n) { animation-range: cover 84px cover 264px, cover 84px cover 504px }
+
+    /* The figures carry the gesture. Biggest element, deepest scale, longest
+       range -- this is the one the eye actually reads as growth. */
+    .cmedia, .cclip {
+      animation-name: fadeUp, growBig;
+      animation-range: cover 30px cover 300px, cover 30px cover 1300px;
+    }
+
+    .clink { animation-range: cover 60px cover 260px, cover 60px cover 860px }
+
+    .scard, .ptier, .nbox, .qitem {
+      animation-name: fadeUp, growCard;
+      animation-range: cover 40px cover 280px, cover 40px cover 1150px;
+    }
+    .scard:nth-child(2), .ptier:nth-child(2), .nbox:nth-child(2), .qitem:nth-child(2)
+      { animation-range: cover 78px cover 318px, cover 78px cover 1188px }
+    .scard:nth-child(3), .ptier:nth-child(3), .nbox:nth-child(3), .qitem:nth-child(3)
+      { animation-range: cover 116px cover 356px, cover 116px cover 1226px }
+    .scard:nth-child(4), .nbox:nth-child(4), .qitem:nth-child(4)
+      { animation-range: cover 154px cover 394px, cover 154px cover 1264px }
+    .qitem:nth-child(5) { animation-range: cover 192px cover 432px, cover 192px cover 1302px }
+
+    .wall span {
+      animation-name: fadeUp, popSmall;
+      animation-range: cover 30px cover 200px, cover 30px cover 430px;
+    }
+    .wall span:nth-child(2n) { animation-range: cover 52px cover 222px, cover 52px cover 452px }
+    .wall span:nth-child(3n) { animation-range: cover 74px cover 244px, cover 74px cover 474px }
+
+    /* The quote runs the other way: the mark arrives oversized and settles
+       down. Alternating the direction stops the page reading as one move. */
+    .quote .qmark {
+      animation-name: fadeUp, dropIn;
+      animation-range: cover 20px cover 220px, cover 20px cover 880px;
+    }
+    .quote blockquote {
+      animation-name: fadeUp, riseHead;
+      animation-range: cover 60px cover 300px, cover 60px cover 1050px;
+    }
+    .quote .qwho { animation-range: cover 100px cover 320px, cover 100px cover 980px }
+
+    /* Short ranges: the footer is last, and can run out of page before a long
+       range finishes, which would leave it permanently part-arrived. */
+    .footcol, .footbrand {
+      animation-range: cover 10px cover 170px, cover 10px cover 330px;
+    }
+    .footcol:nth-of-type(2) { animation-range: cover 32px cover 192px, cover 32px cover 352px }
+    .footcol:nth-of-type(3) { animation-range: cover 54px cover 214px, cover 54px cover 374px }
+
+    /* ── blur, back on the scroll timeline ───────────────────────────────
+       This IS scrubbed, which the performance budget warns about, and the
+       warning is real: a filter cannot be composited like a transform, so it
+       repaints. It is here anyway, deliberately, under three limits that keep
+       the cost bounded:
+
+         · two selectors only -- the chapter headline and its figure, so no
+           more than about two blurred elements exist on screen at once;
+         · 10px radius, resolved inside 300px of scroll, so an element is
+           sharp long before it reaches the reading zone;
+         · nothing below 900px wide, where the GPU is weakest and the effect
+           is least visible anyway.
+
+       That is the difference from the version that tore on a large display:
+       that one scrubbed blur on every revealing element on the page. */
+    @media (min-width: 901px) {
+      .chapter .h2, .cmedia {
+        animation-name: fadeUp, riseHead, unblur;
+        animation-timeline: view(), view(), view();
+        animation-fill-mode: both, both, both;
+        animation-timing-function: var(--e-in), var(--e-grow), var(--e-grow);
+      }
+      .chapter .h2 {
+        animation-range: cover 30px cover 260px, cover 30px cover 1050px, cover 0px cover 560px;
+      }
+      .cmedia {
+        animation-name: fadeUp, growBig, unblur;
+        animation-range: cover 30px cover 300px, cover 30px cover 1300px, cover 0px cover 640px;
+      }
+    }
+
+    /* ── per-chapter title treatment ─────────────────────────────────────
+       Four chapters using one reveal reads as a template. Each gets its own
+       gesture, all built from transform and opacity. */
+    .chapter[data-ch="1"] .h2 { animation-name: fadeUp, dropIn, unblur }   /* arrives large */
+    .chapter[data-ch="2"] .h2 { animation-name: fadeUp, growCard, unblur } /* grows in */
+    .chapter[data-ch="3"] .h2 { animation-name: fadeUp, riseText, unblur } /* rises */
+
+    /* ── continuous, not entrance ───────────────────────────────────────── */
+    .chapter .chead::after {
+      transform-origin: left center;
+      animation: drawRule var(--e-out) both;
+      animation-timeline: view();
+      animation-range: cover 40px cover 340px;
+    }
+    /* Real parallax: driven the whole time the chapter is on screen. */
+    .cvis {
+      animation: drift linear both;
+      animation-timeline: view();
+      animation-range: cover;
+    }
+
+    /* ── reading progress ───────────────────────────────────────────────
+       A document-scroll timeline, so no listener and no per-frame layout
+       write. This is the one place `linear` is right: a progress bar that
+       eases is a progress bar that lies. */
+    #railfill {
+      height: 100%;
+      transform-origin: top center;
+      animation: drawRailY linear both;
+      animation-timeline: scroll(root block);
+    }
+    @keyframes drawRailY { from { transform: scaleY(0) } to { transform: scaleY(1) } }
+  }
+}
