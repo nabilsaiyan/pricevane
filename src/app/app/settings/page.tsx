@@ -1,15 +1,19 @@
 import { revalidatePath } from 'next/cache'
-import { KeyRound, ShieldAlert } from 'lucide-react'
+import { KeyRound, ShieldAlert, Clock, SlidersHorizontal } from 'lucide-react'
 import { getSettings, saveSettings } from '@/lib/data/queries'
 import { getActiveOrg, canManage } from '@/lib/auth/org'
+import { ProviderPicker, type Provider } from '@/components/app/ProviderPicker'
 
 export const dynamic = 'force-dynamic'
 
-const PROVIDERS = [
-  { id: 'anthropic', name: 'Anthropic', models: ['claude-opus-5', 'claude-sonnet-5', 'claude-haiku-4-5-20251001'], wired: true },
-  { id: 'openai', name: 'OpenAI', models: ['gpt-5', 'gpt-5-mini'], wired: false },
-  { id: 'google', name: 'Google', models: ['gemini-3-pro', 'gemini-3-flash'], wired: false },
-] as const
+const PROVIDERS: readonly Provider[] = [
+  { id: 'anthropic', name: 'Claude', blurb: 'Anthropic',
+    models: ['claude-opus-5', 'claude-sonnet-5', 'claude-haiku-4-5-20251001'], wired: true },
+  { id: 'openai', name: 'GPT', blurb: 'OpenAI',
+    models: ['gpt-5', 'gpt-5-mini'], wired: false },
+  { id: 'google', name: 'Gemini', blurb: 'Google',
+    models: ['gemini-3-pro', 'gemini-3-flash'], wired: false },
+]
 
 async function save(formData: FormData) {
   'use server'
@@ -32,7 +36,6 @@ async function save(formData: FormData) {
 export default async function Settings() {
   const [s, org] = await Promise.all([getSettings(), getActiveOrg()])
   const admin = org ? canManage(org.role) : false
-  const current = PROVIDERS.find(p => p.id === s?.match_provider) ?? PROVIDERS[0]
 
   return (
     <>
@@ -56,37 +59,18 @@ export default async function Settings() {
 
       <form action={save} className="setform">
         <section className="card">
-          <header><h2>Matching model</h2></header>
+          <header><h2><SlidersHorizontal size={14} aria-hidden /> Matching model</h2></header>
           <div className="card-pad formgrid">
-            <label>
-              <span className="lb">Provider</span>
-              <select name="provider" defaultValue={s?.match_provider ?? 'anthropic'} disabled={!admin}>
-                {PROVIDERS.map(p => (
-                  <option key={p.id} value={p.id}>
-                    {p.name}{p.wired ? '' : ' — not wired yet'}
-                  </option>
-                ))}
-              </select>
-              <em>
-                Only Anthropic is implemented in the running code today
-                (<code>src/lib/matching/claude.ts</code>). The other two are selectable so the
-                setting exists; they will not answer until the provider is written.
-              </em>
-            </label>
+            <ProviderPicker
+              providers={PROVIDERS}
+              provider={s?.match_provider ?? 'anthropic'}
+              model={s?.match_model ?? 'claude-opus-5'}
+              disabled={!admin}
+            />
 
-            <label>
-              <span className="lb">Model</span>
-              <input name="model" defaultValue={s?.match_model ?? 'claude-opus-5'}
-                     list="models" disabled={!admin} />
-              <datalist id="models">
-                {PROVIDERS.flatMap(p => p.models).map(m => <option key={m} value={m} />)}
-              </datalist>
-              <em>Currently answering with <b>{current.name}</b>.</em>
-            </label>
-
-            <label>
+            <div className="field">
               <span className="lb">Review floor</span>
-              <input name="floor" type="number" step="0.01" min="0" max="1"
+              <input name="floor" type="number" step="0.01" min="0" max="1" className="inp num"
                      defaultValue={s?.review_floor ?? '0.55'} disabled={!admin} />
               <em>
                 Below this, a proposal is discarded rather than shown to a human. It is a
@@ -94,13 +78,13 @@ export default async function Settings() {
                 match automatically. Nothing is ever applied without confirmation, at any
                 confidence.
               </em>
-            </label>
+            </div>
 
-            <label>
+            <div className="field">
               <span className="lb">API key</span>
               <div className="keyrow">
                 <KeyRound size={14} aria-hidden />
-                <input name="apiKey" type="password" placeholder={
+                <input name="apiKey" type="password" className="inp bare" placeholder={
                   s?.api_key_hint ? `Stored — ends ${s.api_key_hint}` : 'Not set'
                 } autoComplete="off" disabled={!admin} />
               </div>
@@ -109,31 +93,37 @@ export default async function Settings() {
                 granted to your role, so it cannot be read by anyone signed in — only by the
                 service role that performs the matching. Leave blank to keep the existing key.
               </em>
-            </label>
+            </div>
           </div>
         </section>
 
         <section className="card" style={{ marginTop: '1rem' }}>
-          <header><h2>Crawl schedule</h2></header>
+          <header><h2><Clock size={14} aria-hidden /> Crawl schedule</h2></header>
           <div className="card-pad formgrid">
-            <label>
+            <div className="field">
               <span className="lb">Frequency</span>
-              <select name="frequency" defaultValue={s?.crawl_frequency ?? 'nightly'} disabled={!admin}>
-                <option value="nightly">Nightly</option>
-                <option value="twice_daily">Twice daily</option>
-                <option value="weekly">Weekly</option>
-              </select>
+              <div className="selwrap">
+                <select name="frequency" className="inp" defaultValue={s?.crawl_frequency ?? 'nightly'}
+                        disabled={!admin}>
+                  <option value="nightly">Nightly</option>
+                  <option value="twice_daily">Twice daily</option>
+                  <option value="weekly">Weekly</option>
+                </select>
+              </div>
               <em>Higher frequency costs more crawl budget and is capped by your plan.</em>
-            </label>
-            <label>
+            </div>
+            <div className="field">
               <span className="lb">Start hour (UTC)</span>
-              <input name="hour" type="number" min="0" max="23"
-                     defaultValue={s?.crawl_hour ?? 2} disabled={!admin} />
+              <div className="keyrow">
+                <Clock size={14} aria-hidden />
+                <input name="hour" type="number" min="0" max="23" className="inp bare"
+                       defaultValue={s?.crawl_hour ?? 2} disabled={!admin} />
+              </div>
               <em>
                 Overnight by default. Crawling a storefront at its quietest hour is the
                 polite choice as well as the one least likely to be rate-limited.
               </em>
-            </label>
+            </div>
           </div>
         </section>
 

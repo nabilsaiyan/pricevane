@@ -7,6 +7,7 @@ import { SetupNotice } from '@/components/app/SetupNotice'
 import { isLocalAuth, getLocalUserId } from '@/lib/auth/local'
 import { OrgSwitcher } from '@/components/app/OrgSwitcher'
 import './app.css'
+import { Mark } from '@/components/Logo'
 
 const NAV = [
   { href: '/app', label: 'Overview', Icon: LayoutDashboard },
@@ -36,7 +37,11 @@ export default async function AppLayout({ children }: { children: React.ReactNod
     <div className="shell">
       <a className="skip" href="#main">Skip to content</a>
       <aside className="aside">
-        <span className="brand">Price<b>vane</b></span>
+        {/* The wordmark is the way back out of the app. It was a bare <span>,
+            which is the one thing every user tries first. */}
+        <Link href="/" className="brand" aria-label="Pricevane home">
+          <Mark size={22} /><span>Price<b>vane</b></span>
+        </Link>
         <OrgSwitcher memberships={memberships} active={active} />
         <nav className="navgrp" aria-label="Sections">
           {NAV.map(({ href, label, Icon }) => (

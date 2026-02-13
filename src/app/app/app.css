@@ -6,10 +6,14 @@
 
 .aside{border-right:1px solid var(--rule);background:#0B0D0E;display:flex;
   flex-direction:column;gap:1.2rem;padding:1.1rem .9rem;position:sticky;top:0;height:100svh}
-.aside .brand{font-family:var(--fm);font-size:11.5px;letter-spacing:.24em;text-transform:uppercase}
+.aside .brand{display:inline-flex;align-items:center;gap:.5rem;font-family:var(--fb);
+  font-size:16px;font-weight:750;letter-spacing:-.02em;color:var(--t1);text-decoration:none;
+  transition:opacity .16s ease}
+.aside .brand svg{flex:none}
+.aside .brand:hover{opacity:.7}
 .aside .brand b{color:var(--lime);font-weight:400}
 .navgrp{display:flex;flex-direction:column;gap:.15rem}
-.navgrp a{font-size:13px;color:var(--t2);padding:.42rem .6rem;border-radius:3px;
+.navgrp a{font-size:14px;color:var(--t2);padding:.42rem .6rem;border-radius:3px;
   text-decoration:none;display:flex;align-items:center;gap:.55rem}
 .navgrp a:hover{color:var(--t1);background:var(--s1)}
 .navgrp a[aria-current="page"]{background:var(--s2);color:var(--t1)}
@@ -19,27 +23,27 @@
 
 .orgsw{position:relative}
 .orgsw button{width:100%;text-align:left;background:var(--s1);border:1px solid var(--rule2);
-  border-radius:4px;padding:.55rem .65rem;color:var(--t1);font-family:var(--fb);font-size:12.5px;
+  border-radius:4px;padding:.55rem .65rem;color:var(--t1);font-family:var(--fb);font-size:13.5px;
   cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:.5rem}
 .orgsw button:hover{border-color:var(--t3)}
-.orgsw .who{font-family:var(--fm);font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;
+.orgsw .who{font-family:var(--fm);font-size:11.5px;letter-spacing:.16em;text-transform:uppercase;
   color:var(--t3);display:block;margin-bottom:.35rem}
 .orgsw menu{position:absolute;left:0;right:0;top:calc(100% + 4px);margin:0;padding:.25rem;
   background:var(--s2);border:1px solid var(--rule2);border-radius:4px;list-style:none;z-index:20}
 .orgsw menu form{margin:0}
-.orgsw menu button{background:none;border:0;border-radius:3px;font-size:12.5px;padding:.45rem .55rem}
+.orgsw menu button{background:none;border:0;border-radius:3px;font-size:13.5px;padding:.45rem .55rem}
 .orgsw menu button:hover{background:var(--s1)}
 
 main.pane{padding:clamp(1.1rem,3vw,2.2rem);min-width:0}
 .head{display:flex;justify-content:space-between;align-items:flex-end;gap:1rem;flex-wrap:wrap;
   border-bottom:1px solid var(--rule);padding-bottom:1rem;margin-bottom:1.6rem}
-.head h1{font-size:clamp(1.5rem,3vw,2.1rem);font-variation-settings:'wdth' 112,'wght' 700;
+.head h1{font-size:clamp(1.5rem,3vw,2.1rem);font-weight:700;font-variation-settings:'opsz' 30;
   letter-spacing:-.03em;line-height:1}
-.head p{color:var(--t2);font-size:13px;margin-top:.4rem}
+.head p{color:var(--t2);font-size:14px;margin-top:.4rem}
 
 .iso{display:flex;align-items:center;gap:.6rem;background:rgba(198,242,78,.07);
   border:1px solid rgba(198,242,78,.28);border-radius:4px;padding:.6rem .8rem;margin-bottom:1.4rem;
-  font-size:12.5px;color:var(--t2)}
+  font-size:13.5px;color:var(--t2)}
 .iso b{color:var(--lime);font-weight:600}
 .iso svg{width:15px;height:15px;color:var(--lime);flex:none}
 
@@ -48,15 +52,15 @@ main.pane{padding:clamp(1.1rem,3vw,2.2rem);min-width:0}
 .kpi{background:var(--s1);padding:.95rem 1.05rem}
 .kpi .v{font-family:var(--fm);font-variant-numeric:tabular-nums;font-size:1.75rem;
   letter-spacing:-.035em;margin-top:.25rem;line-height:1.05}
-.kpi .d{font-family:var(--fm);font-size:11px;color:var(--t3);margin-top:.2rem}
+.kpi .d{font-family:var(--fm);font-size:12px;color:var(--t3);margin-top:.2rem}
 
 .card{background:var(--s1);border:1px solid var(--rule);border-radius:5px}
 .card>header{display:flex;justify-content:space-between;align-items:baseline;gap:1rem;
   padding:.85rem 1.05rem;border-bottom:1px solid var(--rule);flex-wrap:wrap}
-.card>header h2{font-size:13.5px;font-weight:700;letter-spacing:-.01em}
+.card>header h2{font-size:14px;font-weight:700;letter-spacing:-.01em}
 
-table.t{width:100%;border-collapse:collapse;font-size:13px}
-table.t th{text-align:left;font-family:var(--fm);font-size:10.5px;letter-spacing:.14em;
+table.t{width:100%;border-collapse:collapse;font-size:14px}
+table.t th{text-align:left;font-family:var(--fm);font-size:11.5px;letter-spacing:.14em;
   text-transform:uppercase;color:var(--t3);font-weight:400;padding:.6rem 1.05rem;
   border-bottom:1px solid var(--rule)}
 table.t td{padding:.62rem 1.05rem;border-bottom:1px solid var(--rule);color:var(--t2)}
@@ -67,7 +71,7 @@ table.t td a:hover{color:var(--lime)}
 table.t tbody tr:hover{background:rgba(255,255,255,.015)}
 .dn{color:#FF6B5A}.up{color:var(--lime)}
 
-.pill{display:inline-flex;align-items:center;gap:.3rem;font-family:var(--fm);font-size:10.5px;
+.pill{display:inline-flex;align-items:center;gap:.3rem;font-family:var(--fm);font-size:11.5px;
   letter-spacing:.08em;text-transform:uppercase;padding:.2rem .45rem;border-radius:2px;
   border:1px solid var(--rule2);color:var(--t2)}
 .pill.crit{color:var(--alert);border-color:rgba(255,46,76,.4);background:rgba(255,46,76,.08)}
@@ -89,7 +93,7 @@ table.t tbody tr:hover{background:rgba(255,255,255,.015)}
 .meter i.hot{background:var(--alert)}
 
 .btn2{display:inline-flex;align-items:center;gap:.4rem;background:var(--lime);color:#08090A;
-  border:0;padding:.5rem 1rem;border-radius:3px;font-family:var(--fb);font-size:12.5px;
+  border:0;padding:.5rem 1rem;border-radius:3px;font-family:var(--fb);font-size:13.5px;
   font-weight:700;cursor:pointer}
 .btn2.ghost{background:none;color:var(--t2);border:1px solid var(--rule2)}
 .btn2.ghost:hover{color:var(--t1);border-color:var(--t3)}
@@ -97,11 +101,11 @@ table.t tbody tr:hover{background:rgba(255,255,255,.015)}
 .btn2:focus-visible,.navgrp a:focus-visible{outline:2px solid var(--lime);outline-offset:2px}
 
 .srch{width:100%;max-width:320px;background:var(--s1);border:1px solid var(--rule2);
-  border-radius:4px;padding:.5rem .7rem;color:var(--t1);font-family:var(--fb);font-size:13px}
+  border-radius:4px;padding:.5rem .7rem;color:var(--t1);font-family:var(--fb);font-size:14px}
 .srch:focus{outline:none;border-color:var(--t3)}
 .srch::placeholder{color:var(--t3)}
 
-.empty{padding:2.5rem 1.05rem;text-align:center;color:var(--t3);font-size:13px}
+.empty{padding:2.5rem 1.05rem;text-align:center;color:var(--t3);font-size:14px}
 .grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:1rem}
 
 /* ── CHARTS ─────────────────────────────────────────────────────────────
@@ -112,7 +116,7 @@ table.t tbody tr:hover{background:rgba(255,255,255,.015)}
 .chart-card{margin-bottom:1rem}
 .chart-wrap{margin:0}
 .chart-legend{display:flex;flex-wrap:wrap;align-items:center;gap:.4rem 1.2rem;
-  font-family:var(--fm);font-size:11px;color:var(--t3);margin-bottom:.9rem}
+  font-family:var(--fm);font-size:12px;color:var(--t3);margin-bottom:.9rem}
 .chart-legend i{display:inline-block;width:14px;height:2px;margin-right:.45rem;
   vertical-align:middle}
 .chart-legend .sw-you{background:var(--t1)}
@@ -126,15 +130,15 @@ table.t tbody tr:hover{background:rgba(255,255,255,.015)}
   stroke-linejoin:round;stroke-linecap:round}
 .chart-svg .ln-you{stroke:var(--t1);stroke-width:1.5;stroke-dasharray:5 4}
 .chart-axis{display:flex;justify-content:space-between;margin-top:.5rem;
-  font-family:var(--fm);font-size:10px;color:var(--t3)}
-.chart-note{margin:.8rem 0 0;font-size:12px;color:var(--t3)}
+  font-family:var(--fm);font-size:11.5px;color:var(--t3)}
+.chart-note{margin:.8rem 0 0;font-size:13px;color:var(--t3)}
 
 /* sparklines, inline in a row */
 .spark{width:120px;height:26px;display:block}
 .spark path{fill:none;stroke:var(--t2);stroke-width:1.5;
   stroke-linejoin:round;stroke-linecap:round}
 .spark.hot path{stroke:var(--alert)}
-.spark-none{color:var(--t3);font-family:var(--fm);font-size:11px}
+.spark-none{color:var(--t3);font-family:var(--fm);font-size:12px}
 
 /* where you stand */
 .posbar-track{display:flex;height:10px;border-radius:99px;overflow:hidden;
@@ -144,17 +148,17 @@ table.t tbody tr:hover{background:rgba(255,255,255,.015)}
 .seg-level{background:var(--t3)}
 .seg-beaten{background:var(--alert)}
 .posbar-key{display:flex;flex-wrap:wrap;gap:.4rem 1.1rem;margin-top:.7rem;
-  font-family:var(--fm);font-size:11px;color:var(--t3)}
+  font-family:var(--fm);font-size:12px;color:var(--t3)}
 .posbar-key i{display:inline-block;width:8px;height:8px;border-radius:2px;
   margin-right:.4rem;vertical-align:0}
 .posbar-key b{color:var(--t1);font-weight:400;margin-left:.35rem}
 .poslist{list-style:none;margin:1rem 0 0;padding:0;display:flex;
   flex-direction:column;gap:.1rem}
 .poslist li{display:flex;justify-content:space-between;gap:1rem;align-items:baseline;
-  padding:.5rem 0;border-top:1px solid var(--rule);font-size:13px}
+  padding:.5rem 0;border-top:1px solid var(--rule);font-size:14px}
 .poslist li:first-child{border-top:0}
 .poslist .pt{color:var(--t2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.poslist .pg{font-family:var(--fm);font-size:12px;flex:none}
+.poslist .pg{font-family:var(--fm);font-size:13px;flex:none}
 .poslist li.beaten .pg{color:var(--alert)}
 .poslist li.cheapest .pg{color:var(--lime)}
 .poslist li.level .pg{color:var(--t3)}
@@ -165,5 +169,98 @@ table.t tbody tr:hover{background:rgba(255,255,255,.015)}
   transition:background .15s ease}
 .abar:hover{background:var(--lime)}
 .abar.bad{background:var(--alert)}
-.t .sub{display:block;font-family:var(--fm);font-size:10.5px;color:var(--t3);
+.t .sub{display:block;font-family:var(--fm);font-size:11.5px;color:var(--t3);
   margin-top:.15rem}
+
+/* ── SETTINGS ───────────────────────────────────────────────────────────
+   This page previously had no stylesheet at all. `.setform`, `.formgrid`,
+   `.keyrow` and `.formactions` were all class names with nothing behind
+   them, and the controls were unstyled native widgets on a dark ground --
+   a white <select> popped out of a black page. Everything below is new. */
+.setform{max-width:820px;margin-top:1.2rem}
+.card>header h2{display:flex;align-items:center;gap:.5rem}
+.card>header h2 svg{color:var(--t3);flex:none}
+
+.formgrid{display:flex;flex-direction:column;gap:1.6rem}
+.field{display:flex;flex-direction:column;gap:.55rem}
+.field>.lb{margin-bottom:-.1rem}
+.field em{font-style:normal;font-size:13px;line-height:1.55;color:var(--t2);max-width:62ch}
+.field em code{font-family:var(--fm);font-size:12.5px;color:var(--t1);
+  background:var(--s2);border-radius:3px;padding:.08em .35em}
+.field em b{color:var(--t1);font-weight:600}
+
+/* Inputs. One shape for every control in the app, native widget suppressed
+   so a <select> does not render as a light-mode popup on a dark page. */
+.inp{width:100%;background:var(--s2);border:1px solid var(--rule2);border-radius:6px;
+  padding:.6rem .75rem;color:var(--t1);font-family:var(--fu);font-size:14px;
+  font-weight:var(--w-body);appearance:none;-webkit-appearance:none}
+.inp:hover:not(:disabled){border-color:var(--t3)}
+.inp:focus{outline:none;border-color:var(--lime);box-shadow:0 0 0 3px rgba(198,242,78,.14)}
+.inp:disabled{opacity:.5;cursor:not-allowed}
+.inp::placeholder{color:var(--t3)}
+.inp.num{max-width:150px;font-family:var(--fm);font-variant-numeric:tabular-nums}
+.inp.bare{background:none;border:0;padding:0;box-shadow:none}
+.inp.bare:focus{box-shadow:none}
+/* The options themselves are drawn by the OS, so they need explicit colours
+   or they inherit the light default and become white-on-white. */
+.inp option{background:#191C1E;color:#F2F0EB}
+
+.selwrap{position:relative;max-width:320px}
+.selwrap select{padding-right:2.2rem}
+.selwrap::after{content:'';position:absolute;right:.85rem;top:50%;width:7px;height:7px;
+  margin-top:-5px;border-right:1.5px solid var(--t2);border-bottom:1.5px solid var(--t2);
+  transform:rotate(45deg);pointer-events:none}
+
+.keyrow{display:flex;align-items:center;gap:.6rem;max-width:420px;
+  background:var(--s2);border:1px solid var(--rule2);border-radius:6px;padding:.6rem .75rem}
+.keyrow:focus-within{border-color:var(--lime);box-shadow:0 0 0 3px rgba(198,242,78,.14)}
+.keyrow>svg{color:var(--t3);flex:none}
+
+.formactions{display:flex;justify-content:flex-end;gap:.6rem;margin-top:1.2rem;
+  padding-top:1.2rem;border-top:1px solid var(--rule)}
+
+/* Provider cards. The mark, then the name, then whether it actually runs --
+   a vendor that is selectable but unimplemented has to say so on its face. */
+.provgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:.6rem}
+.provcard{position:relative;display:grid;grid-template-columns:auto 1fr;
+  grid-template-areas:'mark name' 'mark flag' 'blurb blurb';
+  align-items:center;gap:.15rem .7rem;text-align:left;cursor:pointer;
+  background:var(--s1);border:1px solid var(--rule2);border-radius:8px;
+  padding:.85rem .9rem;color:var(--t1);
+  transition:border-color .16s ease,background .16s ease,transform .16s ease}
+.provcard:hover:not(:disabled){border-color:var(--t3);transform:translateY(-1px)}
+.provcard.on{border-color:var(--lime);background:rgba(198,242,78,.06)}
+.provcard:disabled{opacity:.55;cursor:not-allowed}
+.provcard:focus-visible{outline:2px solid var(--lime);outline-offset:2px}
+.provcard .provmark{grid-area:mark;width:34px;height:34px;background-color:var(--s2)}
+.provcard.on .provmark{border-color:rgba(198,242,78,.5)}
+.pc-name{grid-area:name;font-size:14.5px;font-weight:650;letter-spacing:-.01em;
+  align-self:end}
+.pc-flag{grid-area:flag;align-self:start;font-family:var(--fm);font-size:11px;
+  letter-spacing:.1em;text-transform:uppercase;color:var(--t3)}
+.pc-flag.live{color:var(--lime)}
+.pc-blurb{grid-area:blurb;font-size:12.5px;color:var(--t3);margin-top:.45rem}
+.pc-tick{position:absolute;top:.6rem;right:.6rem;color:var(--lime)}
+
+/* Model choice. A segmented control rather than a free-text box with a
+   datalist of every vendor's models, which allowed saving a Claude model id
+   against Google. */
+.segbar{display:inline-flex;flex-wrap:wrap;gap:.3rem;background:var(--s2);
+  border:1px solid var(--rule2);border-radius:8px;padding:.28rem}
+.seg{border:0;background:none;border-radius:6px;padding:.44rem .8rem;cursor:pointer;
+  font-family:var(--fm);font-size:12.5px;color:var(--t2);
+  transition:background .16s ease,color .16s ease}
+.seg:hover:not(:disabled){color:var(--t1)}
+.seg.on{background:var(--lime);color:#08090A;font-weight:600}
+.seg:disabled{opacity:.55;cursor:not-allowed}
+.seg:focus-visible{outline:2px solid var(--lime);outline-offset:2px}
+
+/* The read-only notice for a non-admin. `.iso` existed; `.warn` did not. */
+.iso.warn{background:rgba(255,46,76,.08);border-color:rgba(255,46,76,.28)}
+.iso.warn svg{color:var(--alert)}
+.iso.warn b{color:var(--alert)}
+
+@media(max-width:620px){
+  .provgrid{grid-template-columns:1fr}
+  .segbar{width:100%}
+}
