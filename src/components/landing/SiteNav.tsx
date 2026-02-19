@@ -2,9 +2,10 @@
 
 import { useEffect, useRef, useState } from 'react'
 import {
-  Bell, ChevronDown, CreditCard, Database, GitCompareArrows,
+  ArrowRight, Bell, ChevronDown, CreditCard, Database, GitCompareArrows,
   Lock, Radar, ScrollText, Store, Terminal,
 } from 'lucide-react'
+import { Mark } from '@/components/Logo'
 
 /**
  * The site header, with mega-menu panels.
@@ -43,7 +44,7 @@ const MENUS: Menu[] = [
   },
 ]
 
-export function SiteNav() {
+export function SiteNav({ signedIn = false }: { signedIn?: boolean }) {
   const [open, setOpen] = useState<string | null>(null)
   const ref = useRef<HTMLElement>(null)
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null)
@@ -71,7 +72,9 @@ export function SiteNav() {
 
   return (
     <nav className="topnav" ref={ref} onMouseLeave={() => hold(null)}>
-      <a href="/" className="wm">Price<b>vane</b></a>
+      <a href="/" className="wm" aria-label="Pricevane home">
+        <Mark size={22} /><span>Price<b>vane</b></span>
+      </a>
 
       <div className="navmid">
         {MENUS.map(m => (
@@ -108,9 +111,18 @@ export function SiteNav() {
         <a className="navlink" href="#pricingSec">Pricing</a>
       </div>
 
+      {/* Signed in, the pair of sign-up calls to action is just noise: the
+          visitor already has an account and the only thing they want from
+          this header is the way back into it. */}
       <div className="navr">
-        <a className="navlink" href="/sign-in">Log in</a>
-        <a className="btn" href="/sign-in">Start free</a>
+        {signedIn ? (
+          <a className="btn" href="/app">Go to dashboard <ArrowRight size={15} aria-hidden /></a>
+        ) : (
+          <>
+            <a className="navlink" href="/sign-in">Log in</a>
+            <a className="btn" href="/sign-in">Start free</a>
+          </>
+        )}
       </div>
     </nav>
   )

@@ -4,6 +4,7 @@ import { isSupabaseConfigured } from '@/lib/supabase/config'
 import { SetupNotice } from '@/components/app/SetupNotice'
 import { LocalSignIn } from '@/components/app/LocalSignIn'
 import { isLocalAuth, getLocalUserId } from '@/lib/auth/local'
+import { Mark } from '@/components/Logo'
 import './auth.css'
 
 export const dynamic = 'force-dynamic'
@@ -62,7 +63,7 @@ export default async function SignIn({ searchParams }: {
   return (
     <div className="authwrap">
       <div className="authcard">
-        <span className="brandline">Price<b>vane</b></span>
+        <span className="brandline"><Mark size={30} /><span>Price<b>vane</b></span></span>
         <h1>Sign in</h1>
         {sent
           ? <p className="note">Check your inbox — the link signs you straight in. It expires in an hour.</p>
