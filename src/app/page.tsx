@@ -1,10 +1,16 @@
-import { ArrowRight, Bell, Check, GitCompareArrows, Lock, Radar, Store, Zap } from 'lucide-react'
+import { ArrowRight, Bell, Check, GitCompareArrows, Lock, Radar, Sparkles, Store, Zap } from 'lucide-react'
 import { LandingMotion } from '@/components/landing/LandingMotion'
 import { ProductTabs } from '@/components/landing/ProductTabs'
 import { Faq } from '@/components/landing/Faq'
 import { SiteNav } from '@/components/landing/SiteNav'
 import { Media } from '@/components/landing/Media'
 import { Chips, Providers } from '@/components/landing/Chips'
+import { BrandTile, BrandRow, BrandMark, DELIVERY, SOURCES, STACK } from '@/components/landing/Brands'
+import { Portrait, type Face } from '@/components/landing/Avatar'
+import { Mark } from '@/components/Logo'
+import { getUser } from '@/lib/supabase/server'
+import { isSupabaseConfigured } from '@/lib/supabase/config'
+import { isLocalAuth, getLocalUserId } from '@/lib/auth/local'
 
 /**
  * Structure lifted from orshot.com, measured rather than eyeballed.
@@ -130,23 +136,143 @@ const QUOTES = [
   },
 ] as const
 
-export default function Home() {
+/**
+ * Is there a session? Only to decide what the header offers -- never to gate
+ * anything, which is the database's job. A failure here must degrade to the
+ * signed-out header rather than to an error page, so it is wrapped.
+ */
+async function hasSession(): Promise<boolean> {
+  try {
+    if (isLocalAuth()) return Boolean(await getLocalUserId())
+    if (!isSupabaseConfigured()) return false
+    return Boolean(await getUser())
+  } catch { return false }
+}
+
+/**
+ * Invented customers, and the page says so under the fold.
+ *
+ * `size` drives the masonry: two cards get more room because their claim is
+ * the strongest, which is the difference between a testimonial wall you skim
+ * and one you scroll past. `tag` colour-codes each quotation by the capability
+ * it is about. `hue` picks the avatar colour.
+ *
+ * The avatars are monograms, not photographs. Generating photoreal faces to
+ * attach to quotations nobody said is the one thing a fake testimonial must
+ * not do -- a drawn monogram is honestly synthetic, and it survives being
+ * looked at closely. Swap in real portraits here if there are ever real
+ * customers to photograph.
+ */
+const STORIES: {
+  q: string; who: string; co: string; initials: string; hue: number; face: Face
+  size?: 'lg' | 'wide'
+  tag: [typeof Bell, string, string]
+}[] = [
+  { q: 'Caught a price war on day two, not week three.', who: 'Ben T.', co: 'Lumen Home',
+    initials: 'BT', hue: 1, size: 'lg',
+    face: { skin: '#D9A377', hair: '#2A1F1A', shirt: '#2E3A42', cut: 'short', beard: 'stubble' }, tag: [Bell, 'alert', 'Alerts'] },
+  { q: 'We reprice twice a week now instead of twice a month.', who: 'Ivan K.', co: 'Kestrel & Co',
+    initials: 'IK', hue: 2,
+    face: { skin: '#F0C9A4', hair: '#8A6A4A', shirt: '#3A3550', cut: 'wave', glasses: true }, tag: [Zap, 'speed', 'Cadence'] },
+  { q: 'The stockout alert alone paid for the year.', who: 'Mihai C.', co: 'Fjorda',
+    initials: 'MC', hue: 3,
+    face: { skin: '#B87A4F', hair: '#1C1614', shirt: '#264238', cut: 'crop', beard: 'full' }, tag: [Store, 'stock', 'Stock'] },
+  { q: 'Matching found 40 listings we did not know existed.', who: 'Nic C.', co: 'Ardent Tools',
+    initials: 'NC', hue: 4, size: 'wide',
+    face: { skin: '#8A5433', hair: '#1C1614', shirt: '#43303C', cut: 'curls' }, tag: [GitCompareArrows, 'match', 'Matching'] },
+  { q: 'One dashboard for four brands, none of them mixed up.', who: 'Max M.', co: 'Sable + Stone',
+    initials: 'MM', hue: 5,
+    face: { skin: '#E8B48C', hair: '#3A3A3E', shirt: '#3B3324', cut: 'receding', beard: 'goatee' }, tag: [Lock, 'iso', 'Isolation'] },
+  { q: 'I stopped keeping a competitor spreadsheet entirely.', who: 'Francesca O.', co: 'Vellum',
+    initials: 'FO', hue: 6,
+    face: { skin: '#5E3A22', hair: '#1C1614', shirt: '#22333F', cut: 'tied', beard: 'stubble' }, tag: [Radar, 'crawl', 'Coverage'] },
+  { q: 'We were the only shop in stock for eleven days.', who: 'Thomas S.', co: 'Noor Atelier',
+    initials: 'TS', hue: 3,
+    face: { skin: '#F0C9A4', hair: '#4A342A', shirt: '#333A2A', cut: 'short', glasses: true }, tag: [Store, 'stock', 'Stock'] },
+  { q: 'Set it up on a Friday. It found something that night.', who: 'David F.', co: 'Bastion',
+    initials: 'DF', hue: 2,
+    face: { skin: '#D9A377', hair: '#6B4A32', shirt: '#2B2F3E', cut: 'crop', beard: 'goatee' }, tag: [Radar, 'crawl', 'Coverage'] },
+]
+
+/** The three plans. `hue` colours the tier icon; `lead` labels its list. */
+const TIERS: {
+  n: string; p: string; s: string; who: string; cta: string; on: boolean
+  hue: string; lead: string; Icon: typeof Bell; f: [string, boolean][]
+}[] = [
+  { n: 'Free', p: '€0', s: 'forever', who: 'One shop, finding its feet',
+    cta: 'Start free', on: false, hue: 'sky', lead: 'Includes', Icon: Store,
+    f: [['25 products', false], ['Weekly crawls', false], ['1 storefront', false],
+        ['Email alerts', false]] },
+  { n: 'Studio', p: '€49', s: 'per month', who: 'A catalogue with real rivals',
+    cta: 'Start free trial', on: true, hue: 'lime', lead: 'Everything in Free, plus', Icon: Zap,
+    f: [['350 products', true], ['Nightly crawls', true], ['10 storefronts', false],
+        ['Email + Slack', false], ['LLM matching', true]] },
+  { n: 'Scale', p: '€149', s: 'per month', who: 'Several brands, one team',
+    cta: 'Start free trial', on: false, hue: 'violet', lead: 'Everything in Studio, plus', Icon: Radar,
+    f: [['2,000 products', true], ['Twice daily', true], ['Unlimited storefronts', false],
+        ['Priority crawl queue', false], ['API access', true]] },
+]
+
+/** What actually differs, side by side. */
+const COMPARE: [string, typeof Bell, string, string, string][] = [
+  ['Products watched', Store, '25', '350', '2,000'],
+  ['Crawl frequency', Radar, 'Weekly', 'Nightly', 'Twice daily'],
+  ['Storefronts', GitCompareArrows, '1', '10', 'Unlimited'],
+  ['Alert delivery', Bell, 'Email', 'Email + Slack', 'Email + Slack'],
+  ['Model matching', Zap, '—', 'Included', 'Included'],
+  ['API access', Lock, '—', '—', 'Included'],
+]
+
+/** The footer's elsewhere row. LinkedIn is absent because its mark has been
+ *  withdrawn from the icon set, and drawing an approximation of somebody's
+ *  logo is worse than not showing it. */
+const SOCIAL = [
+  { id: 'github', name: 'GitHub', hex: '#E8E6E1' },
+  { id: 'x', name: 'X', hex: '#E8E6E1' },
+  { id: 'rss', name: 'RSS', hex: '#FFA500' },
+]
+
+export default async function Home() {
+  const signedIn = await hasSession()
   return (
     <>
       <a className="skip" href="#main">Skip to content</a>
       <div id="rail"><div id="railfill" /></div>
 
-      <SiteNav />
+      <SiteNav signedIn={signedIn} />
 
       <main id="main">
 
         {/* ── HERO ─────────────────────────────────────────────── */}
         <header className="hero">
+          {/* The two prices. Yours holds its level; theirs falls through it at
+              x=860, which is the whole product in one gesture. The rival line
+              is a gradient rather than a flat stroke -- neutral while it is
+              above you, alert-red once it is under -- and the crossing carries
+              a marker, because the moment is the point and it was previously
+              just an unremarked intersection of two grey lines. */}
           <svg id="duel" viewBox="0 0 1440 800" preserveAspectRatio="none" role="img"
                aria-label="Your price holds flat while a competitor's price falls and crosses beneath it at 03:14.">
+            <defs>
+              <linearGradient id="gTheirs" x1="0" y1="0" x2="1" y2="0">
+                <stop offset="0%" stopColor="#8A9195" stopOpacity=".35" />
+                <stop offset="46%" stopColor="#8A9195" stopOpacity=".9" />
+                <stop offset="62%" stopColor="#FF2E4C" stopOpacity=".95" />
+                <stop offset="100%" stopColor="#FF2E4C" stopOpacity=".8" />
+              </linearGradient>
+              <linearGradient id="gMine" x1="0" y1="0" x2="1" y2="0">
+                <stop offset="0%" stopColor="#C6F24E" stopOpacity=".25" />
+                <stop offset="30%" stopColor="#C6F24E" stopOpacity="1" />
+                <stop offset="100%" stopColor="#C6F24E" stopOpacity="1" />
+              </linearGradient>
+            </defs>
             <path id="mine" d="M0,392 L180,388 L360,396 L540,386 L720,392 L900,389 L1080,394 L1260,390 L1440,388" />
             <path id="theirs" d="M0,250 L180,272 L360,222 L540,300 L720,330 L860,392 L960,470 L1130,556 L1290,570 L1440,562" />
           </svg>
+          {/* The crossing. `.xpt` has been in the stylesheet all along with no
+              element to attach to, so the one moment the graphic is about has
+              never actually been marked. */}
+          <span className="xpt" id="xpt" aria-hidden="true" />
 
           <div className="hwrap">
             <span className="pill" id="hpill">
@@ -198,7 +324,7 @@ export default function Home() {
         {/* ── CHAPTERS, alternating with quote bands ───────────── */}
         {CHAPTERS.map((c, i) => (
           <div key={c.n}>
-            <section className="band chapter" id={c.id}>
+            <section className="band chapter" id={c.id} data-ch={i}>
               <div className="chead">
                 <span className="cnum">{c.n}</span>
                 <span className="ckind">{c.kind}</span>
@@ -253,25 +379,53 @@ export default function Home() {
         <section className="band stories" id="storiesSec">
           <p className="eyebrow">Customer stories</p>
           <h2 className="h2">How teams stopped losing the morning.</h2>
+          <p className="lede">
+            Eight invented companies, because this is a portfolio piece and saying so
+            is better than implying otherwise. What each of them describes is a thing
+            the running product actually does.
+          </p>
+          {/* A uniform grid of eight identical cards reads as a wall of text and
+              tells you nothing about which quotation matters. The grid is now
+              masonry-ish: two cards are given double width and a larger type
+              size because they carry the strongest claims, and the tag on each
+              card is coloured by the capability it is about, so the section can
+              be skimmed by colour before it is read. */}
           <div className="sgrid">
-            {[
-              ['Caught a price war on day two, not week three.', 'Ben T.', 'Lumen Home'],
-              ['We reprice twice a week now instead of twice a month.', 'Ivan K.', 'Kestrel & Co'],
-              ['The stockout alert alone paid for the year.', 'Mihai C.', 'Fjorda'],
-              ['Matching found 40 listings we did not know existed.', 'Nic C.', 'Ardent Tools'],
-              ['One dashboard for four brands, none of them mixed up.', 'Max M.', 'Sable + Stone'],
-              ['I stopped keeping a competitor spreadsheet entirely.', 'Francesca O.', 'Vellum'],
-              ['We were the only shop in stock for eleven days.', 'Thomas S.', 'Noor Atelier'],
-              ['Set it up on a Friday. It found something that night.', 'David F.', 'Bastion'],
-            ].map(([q, who, co]) => (
-              <figure className="scard" key={who}>
-                <p>&ldquo;{q}&rdquo;</p>
+            {STORIES.map(s => {
+              const [TagIcon, tagKind, tagLabel] = s.tag
+              return (
+              <figure className={`scard${s.size === 'lg' ? ' lg' : ''}${s.size === 'wide' ? ' wide' : ''}`}
+                      key={s.who}>
+                <span className={`stag t-${tagKind}`}>
+                  <TagIcon size={12} aria-hidden />{tagLabel}
+                </span>
+                <p>&ldquo;{s.q}&rdquo;</p>
                 <figcaption className="swho">
-                  <Media w={36} h={36} label={who} kind="avatar" />
-                  <span><b>{who}</b>{co}</span>
+                  <span className={`av av-${s.hue}`}><Portrait f={s.face} size={40} /></span>
+                  <span><b>{s.who}</b>{s.co}</span>
                 </figcaption>
               </figure>
-            ))}
+            )})}
+          </div>
+        </section>
+
+        {/* ── WHERE IT PLUGS IN ────────────────────────────────── */}
+        <section className="band integ" id="integSec">
+          <p className="eyebrow">Connections</p>
+          <h2 className="h2">Where the alert lands.</h2>
+          <p className="lede">
+            Three delivery channels are built and running. The catalogue sources below
+            are not — they are named here because the shape of the work is decided, and
+            a logo grid that does not say which is which is a claim, not a roadmap.
+          </p>
+
+          <div className="bgrid live-set">
+            {DELIVERY.map(b => <BrandTile b={b} key={b.id} />)}
+          </div>
+
+          <p className="bsub">Catalogue sources — planned, none of them wired</p>
+          <div className="bgrid">
+            {SOURCES.map(b => <BrandTile b={b} key={b.id} />)}
           </div>
         </section>
 
@@ -305,22 +459,44 @@ export default function Home() {
           </p>
 
           <div className="pgrid">
-            {[
-              { n: 'Free', p: '€0', s: 'forever', f: ['25 products', 'Weekly crawls', '1 storefront', 'Email alerts'], cta: 'Start free', on: false },
-              { n: 'Studio', p: '€49', s: 'per month', f: ['350 products', 'Nightly crawls', '10 storefronts', 'Email + Slack', 'LLM matching'], cta: 'Start free trial', on: true },
-              { n: 'Scale', p: '€149', s: 'per month', f: ['2,000 products', 'Twice daily', 'Unlimited storefronts', 'Priority crawl queue', 'API access'], cta: 'Start free trial', on: false },
-            ].map(t => (
-              <div className={`ptier${t.on ? ' on' : ''}`} key={t.n}>
-                {t.on && <span className="pbadge">Most chosen</span>}
-                <h3>{t.n}</h3>
-                <div className="pprice"><b>{t.p}</b><span>{t.s}</span></div>
-                <ul>{t.f.map(f => (
-                  <li key={f}><Check size={13} aria-hidden />{f}</li>
+            {TIERS.map(tier => (
+              <div className={`ptier${tier.on ? ' on' : ''}`} key={tier.n}>
+                {tier.on && <span className="pbadge"><Sparkles size={11} aria-hidden />Most chosen</span>}
+                <span className={`pico p-${tier.hue}`}><tier.Icon size={19} aria-hidden /></span>
+                <h3>{tier.n}</h3>
+                <p className="ptag">{tier.who}</p>
+                <div className="pprice"><b>{tier.p}</b><span>{tier.s}</span></div>
+                <button className={`btn${tier.on ? '' : ' ghost'} full`} type="button">{tier.cta}</button>
+                <span className="plabel">{tier.lead}</span>
+                <ul>{tier.f.map(([f, strong]) => (
+                  <li key={f} className={strong ? 'hi' : undefined}>
+                    <Check size={13} aria-hidden />{f}
+                  </li>
                 ))}</ul>
-                <button className={`btn${t.on ? '' : ' ghost'} full`} type="button">{t.cta}</button>
               </div>
             ))}
           </div>
+
+          {/* The three numbers that actually differ between plans, pulled out
+              of the feature lists where they were buried among ticks. This is
+              the comparison anyone is really making. */}
+          <div className="pcompare" role="table" aria-label="Plans compared">
+            <div className="pcrow pchead" role="row">
+              <span role="columnheader">What changes</span>
+              <span role="columnheader">Free</span>
+              <span role="columnheader">Studio</span>
+              <span role="columnheader">Scale</span>
+            </div>
+            {COMPARE.map(([label, Icon, a, b, c]) => (
+              <div className="pcrow" role="row" key={label as string}>
+                <span role="cell"><Icon size={14} aria-hidden />{label as string}</span>
+                <span role="cell">{a as string}</span>
+                <span role="cell" className="mid">{b as string}</span>
+                <span role="cell">{c as string}</span>
+              </div>
+            ))}
+          </div>
+
           <p className="pfoot">
             <Zap size={13} aria-hidden /> Stripe test mode. Card <code>4242 4242 4242 4242</code>,
             any future date, any CVC.
@@ -356,12 +532,20 @@ export default function Home() {
       <footer className="foot">
         <div className="footin">
           <div className="footbrand">
-            <span className="wm">Price<b>vane</b></span>
+            <span className="wm"><Mark size={24} /><span>Price<b>vane</b></span></span>
             <p>Competitor prices, checked overnight.<br />Read the answer over coffee.</p>
+            {/* These were four bare grey squares: `.social i` had a background
+                and no glyph, so the row read as a rendering failure. */}
             <div className="social" aria-label="Elsewhere">
-              {['GitHub', 'LinkedIn', 'X', 'RSS'].map(n => (
-                <a key={n} href="/architecture" aria-label={n}><i /></a>
+              {SOCIAL.map(b => (
+                <a key={b.id} href="/architecture" aria-label={b.name} title={b.name}>
+                  <BrandMark b={b} size={16} />
+                </a>
               ))}
+            </div>
+            <div className="builtwith">
+              <span className="lb">Built with</span>
+              <BrandRow items={STACK} label="Technology used" />
             </div>
           </div>
 
