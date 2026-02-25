@@ -1,162 +1,131 @@
-# Pricevane
+# Pricevane — an AI-powered multi-tenant SaaS for competitor price monitoring
 
-Competitor price and catalog monitoring. A brand adds the storefronts it wants
-watched, maps its products to the equivalent listings on those stores, and wakes
-up to a record of every move plus an alert when someone undercuts it.
+A production-shaped SaaS for small e-commerce teams. It crawls rival storefronts
+overnight, matches their listings to your products, and tells you the moment one
+of them goes under you — with the product matched, the movement measured, and
+the minute it happened.
 
-Built as a portfolio flagship by [Nabil Amhaouch](https://nabilamhaouch.dev).
+The hard part is not the crawling, it is knowing that *their* "ErgoMesh Task
+Chair, Graphite" is *your* SKU. That is done by an LLM that returns a confidence
+and a written reason for every pairing — and never applies one without a human
+confirming it.
+
+Subscription billing, per-tenant isolation, plan limits and usage metering are
+built the way a real SaaS has to build them: enforced in the database, not in
+the interface.
+
+**This is a portfolio project.** Every company, customer, quotation and figure in
+the interface is invented, and the shops the crawlers visit are three fictional
+storefronts built for the purpose. No real retailer is ever crawled. The
+architecture, the isolation tests and the billing ledger are real.
 
 ---
 
 ## The three decisions worth explaining
 
-### 1. Tenant isolation lives in the database, not the application
+Most of this product is ordinary. Three parts are not, and they are the parts
+that decide whether it survives contact with real customers.
 
-Every tenant-scoped table carries `organization_id` and is protected by a
-row-level security policy. There is no code path — ORM, raw SQL, crafted
-filter, forgotten `WHERE` — that returns another tenant's rows to an
-authenticated user.
+### 1 · Tenant isolation lives in Postgres, not in application code
 
-Application-layer filtering was rejected because **it fails open**. A missing
-`.eq('organization_id', …)` in one handler leaks an entire table and nothing
-complains; the tests still pass, because the tests exercise the handler that has
-the filter. RLS **fails closed**: forget the filter and the query returns zero
-rows. The failure mode of the mechanism should be silence, not disclosure.
+Every tenant-scoped table carries an `organization_id` and a row-level security
+policy, and the policies are `FORCE`d so they apply to the table owner as well.
+There is no path — ORM, raw SQL, crafted filter, forgotten `WHERE` — that
+returns one customer's rows to another.
 
-Three details that make it hold:
+Application-layer filtering was rejected because it fails **open**: a missing
+`.eq('organization_id', …)` in one handler leaks a whole table and nothing
+complains, because the tests exercise the handler that has the filter. A policy
+fails **closed** — get it wrong and you see nothing, which is a bug you find in
+the first minute rather than in a disclosure email.
 
-- **`FORCE ROW LEVEL SECURITY`, not just `ENABLE`.** `ENABLE` exempts the table
-  owner, and migrations run as the owner.
-- **`WITH CHECK` on every write policy, not only `USING`.** `USING` governs what
-  you can *see*; `WITH CHECK` governs what you can *write*. With `USING` alone a
-  member can `UPDATE` their own row and set `organization_id` to another
-  tenant's — moving data across the boundary instead of reading across it.
-- **Membership is read through a `SECURITY DEFINER` function with a pinned
-  `search_path`.** A policy on `memberships` that queries `memberships` recurses
-  infinitely; the definer function breaks the cycle, and the pinned path stops
-  anyone shadowing the table from an earlier schema.
+`tests/rls/` signs in as one organisation, crafts a query for another
+organisation's rows, and asserts it gets none.
 
-`auth.uid()` is wrapped as `(select auth.uid())` throughout, which turns a
-per-row call into a once-per-statement InitPlan.
+A related trap, found the hard way and now covered by regression tests: a
+table-level `GRANT SELECT` silently overrides a column-level `REVOKE`. Secret
+columns (`notification_channels.secret`, `organization_settings.api_key_enc`)
+are protected by per-column grants in `0007_column_grants.sql`.
 
-**Proof:** `npm run test:rls` — 17 tests that open a raw Postgres connection,
-become the `authenticated` role, and attack the database directly: naming
-another org's id, dropping the tenant filter, reaching across a join, counting,
-`EXISTS`-probing, inserting into another tenant, and relocating an owned row
-across the boundary.
+### 2 · Stripe webhooks are idempotent by ledger, not by hope
 
-### 2. Stripe webhooks are idempotent through a ledger, not a flag
+Every event is claimed in an event ledger inside the same transaction that
+applies it, keyed on Stripe's own event id. A replay finds the row already
+processed and stops. Out-of-order delivery is handled separately, with a
+watermark on the subscription — an event that describes an older state than the
+one already recorded is discarded rather than applied.
 
-Stripe guarantees **at-least-once** delivery. The same `evt_…` arrives twice on
-timeout, on 5xx, and on its own retry schedule. A replayed `invoice.paid` grants
-a second month; a replayed `customer.subscription.deleted` downgrades a customer
-who has just resubscribed and paid.
+### 3 · The model never merges anything on its own
 
-The ledger's **primary key is the Stripe event id**, and the event is claimed in
-the *same transaction* as the state change it causes. Applying an event and
-recording that it was applied therefore commit or roll back together — there is
-no window where one happened and the other did not.
+Matching returns a confidence and a written reason, and everything it proposes
+waits for a person to confirm or reject it — at 0.94 and at 0.99 alike. Both
+answers are stored and fed back as examples. The `review_floor` setting is a
+floor on what is worth a human's attention, never a threshold for acting
+automatically.
 
-The subtle half is the claim itself:
-
-```sql
-insert into stripe_events (id, type, api_version, payload, attempts)
-values ($1,$2,$3,$4,1)
-on conflict (id) do update
-  set attempts = stripe_events.attempts + 1, error = null
-where stripe_events.processed_at is null
-returning id
-```
-
-A plain `INSERT` would be wrong. The failure path records the error under the
-same event id, so the ledger row *survives a failure* — and the next delivery
-would collide, be called a duplicate, and the event would never be applied. One
-transient database blip and that customer's upgrade is lost permanently. This
-bug was real; the replay test caught it. Conflicting on an **unprocessed** row
-means a previous attempt failed, so we take the claim and retry. Conflicting on
-a **processed** row returns nothing, and *that* is the real duplicate.
-
-Two more things the happy path misses:
-
-- **Out-of-order delivery.** Stripe promises delivery, not order. A
-  `subscription.updated` created at 10:00 can arrive after the one created at
-  10:05, rolling the tier backwards. Every subscription write compares
-  `event.created` against a `last_event_at` watermark and drops anything staler.
-- **A failed invoice does not downgrade.** Stripe retries for days; cutting
-  service off on a temporary card decline is how you lose a paying customer to a
-  bank blip. `invoice.payment_failed` sets `past_due` and starts dunning; the
-  tier holds.
-
-This path talks to Postgres directly rather than through `supabase-js`, because
-idempotency needs a real transaction and PostgREST gives each call its own.
-
-**Proof:** `npm test` — replay, replayed-cancellation-vs-resubscribe,
-out-of-order, mid-apply failure and clean retry, and dunning.
-
-### 3. Crawler blocks are handled by rotating identity as a unit
-
-Fingerprint, timezone, locale and IP rotate **together**. Rotating the proxy
-alone while keeping one browser fingerprint is what gets a crawler linked across
-sessions and blocked. `crawl_runs` records which identity each run wore, so
-every data point traces back to the run — and the identity — that produced it.
-Per-domain rate limiting is keyed on `competitor_stores.domain`, not on the
-store row, because two tenants watching the same storefront must share one
-politeness budget.
-
-**We do not crawl real retailers.** Three fictional storefronts are built and
-deployed as part of this project and those are the crawl targets. Legally clean,
-fully controllable, and building the test harness is more interesting than
-scraping someone else's shop.
+Plan limits are enforced by a database trigger rather than a check in the
+interface, so an over-limit account can still be edited *down* — downgrading
+never traps you.
 
 ---
 
 ## Stack
 
-Next.js 16 (App Router) · TypeScript · Tailwind 4 · Supabase (Postgres, Auth,
-Storage) · Stripe · GSAP 3.15 + ScrollTrigger · Python 3.14 + Playwright for
-crawlers (`crawlers/README.md`) · three fictional storefronts (`storefronts/`).
+| | |
+|---|---|
+| Framework | Next.js 16 (App Router, typed routes), React 19, TypeScript strict |
+| Data | Supabase / PostgreSQL, row-level security on every tenant table |
+| Billing | Stripe — **test mode only, no live keys anywhere** |
+| Matching | Anthropic (wired); OpenAI and Google are selectable but not implemented |
+| Charts | Recharts |
+| Motion | Native CSS scroll-driven animation (`animation-timeline: view()`), GSAP for what CSS cannot express |
+| Email | Resend |
+| Capture | Playwright |
+| Tests | Vitest — 56, covering RLS isolation, billing idempotency and matching |
 
 ## Running it
 
 ```bash
-cp .env.example .env.local        # fill in; Stripe test keys copy from Cartello
 npm install
+cp .env.example .env.local     # fill in Supabase, Stripe test keys, Resend
+npm run db:migrate             # nine migrations, in order
+npm run seed                   # two organisations, ~7,600 price snapshots
 npm run dev
 ```
 
-Tests need a throwaway Postgres. They migrate it from scratch on every run, so a
-pass means the migrations built the schema, not that leftovers happened to fit:
-
 ```bash
-docker run -d --name pv-test -e POSTGRES_PASSWORD=postgres \
-  -e POSTGRES_DB=pricevane -p 55432:5432 postgres:17
-npm test
+npm run typecheck
+npm test                       # all suites
+npm run test:rls               # isolation only — needs a throwaway Postgres
+npm run alerts                 # evaluate the alert engine against seeded history
 ```
 
-## Status
+`AGENTS.md` is written and re-added by `next dev`; committing it with your work
+keeps the tree clean.
 
-| Phase | | |
-|---|---|---|
-| 1 | Multi-tenant foundation — schema, RLS, roles, invitations, isolation test | done |
-| 2 | Fictional competitor storefronts | done |
-| 3 | Crawler pipeline | done |
-| 4 | Dashboard — overview, products, price history, matches, alerts, billing | done |
-| 5 | LLM product matching with the confirmation flow | done |
-| 6 | Stripe tiers, usage limits, webhook lifecycle | done |
-| 7 | Alerts — rules, email, Slack, webhook | done |
-| 8 | Landing page choreography | done |
-| 9 | `/architecture` page and seeded demo data | done |
-| 10 | Performance, accessibility and reduced-motion pass | outstanding |
+## Layout
 
-Not yet wired to live infrastructure: a Supabase project, a Stripe test account,
-and deployment. `.env.example` documents every variable, and the Stripe names
-match Cartello's so the same test keys drop straight in.
+```
+src/app/                 routes — landing, /app dashboard, /architecture, auth
+src/app/motion.css       the scroll choreography, and why each range is what it is
+src/lib/db/rls.ts        does per request what PostgREST does: sets the JWT claim
+                         and the role, so local development has the same boundary
+src/lib/data/queries.ts  analytics as SECURITY INVOKER Postgres functions
+supabase/migrations/     nine migrations; 0002 and 0007 are the security ones
+tests/rls/               adversarial isolation tests
+scripts/record/          scripted screen capture for the product clips
+```
 
-51 tests, all against a real Postgres 17 in Docker rather than mocks.
+## Security notes
 
-## Licence notes
+- Secrets live in environment variables and are never committed.
+- Stripe stays in test mode on a dedicated account.
+- The crawler visits only the project's own fictional storefronts, rate-limited.
+- Third-party marks in `public/brands/` and `public/providers/` are other
+  companies' trademarks, shown only against capabilities that exist and never
+  presented as a partnership or endorsement. Anything unbuilt is labelled
+  *planned* in the interface.
 
-GSAP 3.15 is free including ScrollTrigger and SplitText (Webflow, April 2025).
-Magic UI is MIT. React Bits is MIT + Commons Clause — usable in a product, not
-resellable as components. All are copy-paste rather than dependencies, so the
-code here is ours and carries none of their default styling.
+## Licence
+
+Not currently licensed for reuse.
