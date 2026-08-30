@@ -1,4 +1,4 @@
-import { ArrowRight, Bell, Check, GitCompareArrows, Lock, Radar, Sparkles, Store, Zap } from 'lucide-react'
+import { ArrowRight, Bell, Check, GitCompareArrows, Lock, MoonStar, Radar, Sparkles, Store, Zap } from 'lucide-react'
 import { LandingMotion } from '@/components/landing/LandingMotion'
 import { ProductTabs } from '@/components/landing/ProductTabs'
 import { Faq } from '@/components/landing/Faq'
@@ -512,7 +512,7 @@ export default async function Home() {
 
         {/* ── CLOSE ────────────────────────────────────────────── */}
         <section className="band close2">
-          <Store size={22} aria-hidden />
+          <span className="closeico" aria-hidden><MoonStar size={26} /></span>
           <h2 className="h2 big">Sleep on it.</h2>
           <p className="lede center">
             The crawls run at two in the morning either way. You may as well read the
