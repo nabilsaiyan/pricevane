@@ -307,12 +307,26 @@ h1,h2,h3,p{margin:0}
 /* ── TRUSTED BY ─────────────────────────────────────────────────────── */
 .trust{text-align:center}
 .trust .eyebrow{margin-bottom:1.8rem}
-.wall{display:flex;flex-wrap:wrap;justify-content:center;
-  gap:clamp(.9rem,2.6vw,2rem) clamp(1.3rem,3.6vw,3rem);align-items:baseline}
-.wall span{font-family:var(--fb);font-weight:700;font-variation-settings:'opsz' 28;
-  font-size:clamp(.9rem,1.7vw,1.15rem);color:var(--t3);white-space:nowrap;
-  transition:color .2s ease}
-.wall span:hover{color:var(--t1)}
+/* A bordered grid of cells, the way a customer wall actually reads, rather
+   than a centred row of bold words. Hairline dividers between cells and no
+   outer gaps, so it registers as one object. */
+.wall{display:grid;grid-template-columns:repeat(4,1fr);list-style:none;margin:2.4rem 0 0;
+  padding:0;gap:1px;background:var(--rule);border:1px solid var(--rule);
+  border-radius:var(--r-md);overflow:hidden;overflow:clip}
+.wall li{display:flex;align-items:center;justify-content:center;gap:.65rem;
+  background:var(--s1);padding:1.5rem 1rem;transition:background .2s ease}
+.wall li:hover{background:var(--s2)}
+.wmark{display:grid;place-items:center;width:30px;height:30px;flex:none;
+  border-radius:8px;font-family:var(--fm);font-size:11.5px;font-weight:760;
+  letter-spacing:.02em;color:var(--wc);border:1px solid;
+  border-color:color-mix(in srgb, var(--wc) 42%, transparent);
+  background:color-mix(in srgb, var(--wc) 12%, transparent)}
+.wname{font-family:var(--fb);font-weight:720;font-variation-settings:'opsz' 26;
+  font-size:clamp(.92rem,1.35vw,1.08rem);letter-spacing:-.015em;color:var(--t2);
+  white-space:nowrap;transition:color .2s ease}
+.wall li:hover .wname{color:var(--t1)}
+@media(max-width:900px){.wall{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:520px){.wall{grid-template-columns:1fr}}
 
 /* ── CHAPTERS ───────────────────────────────────────────────────────── */
 .chapter{position:relative;border-top:1px solid var(--rule)}
