@@ -1,4 +1,4 @@
-import { ArrowRight, Bell, Check, GitCompareArrows, Lock, Radar, Sparkles, Store, Zap } from 'lucide-react'
+import { ArrowRight, Bell, Check, GitCompareArrows, Lock, MoonStar, Radar, Sparkles, Store, Zap } from 'lucide-react'
 import { LandingMotion } from '@/components/landing/LandingMotion'
 import { ProductTabs } from '@/components/landing/ProductTabs'
 import { Faq } from '@/components/landing/Faq'
@@ -232,6 +232,18 @@ const SOCIAL = [
   { id: 'rss', name: 'RSS', hex: '#FFA500' },
 ]
 
+/** The customer wall. Invented, like everything else on this page. */
+const CUSTOMERS = [
+  { name: 'Lumen Home',   mono: 'LH', hue: '#C6F24E' },
+  { name: 'Kestrel & Co', mono: 'KC', hue: '#7DD3FC' },
+  { name: 'Fjorda',       mono: 'FJ', hue: '#5EEAD4' },
+  { name: 'Ardent Tools', mono: 'AT', hue: '#FDBA74' },
+  { name: 'Sable + Stone',mono: 'SS', hue: '#D8B4FE' },
+  { name: 'Vellum',       mono: 'VL', hue: '#FF9DAC' },
+  { name: 'Noor Atelier', mono: 'NA', hue: '#93C5FD' },
+  { name: 'Bastion',      mono: 'BA', hue: '#A7F3D0' },
+]
+
 export default async function Home() {
   const signedIn = await hasSession()
   return (
@@ -309,16 +321,22 @@ export default async function Home() {
         {/* ── TRUSTED BY ───────────────────────────────────────── */}
         <section className="band trust" id="proof">
           <p className="eyebrow">Trusted by retail and brand teams across Europe</p>
-          <div className="wall" aria-label="Customers">
-            <span>LUMEN HOME</span>
-            <span>KESTREL &amp; CO</span>
-            <span>FJORDA</span>
-            <span>ARDENT TOOLS</span>
-            <span>SABLE + STONE</span>
-            <span>VELLUM</span>
-            <span>NOOR ATELIER</span>
-            <span>BASTION</span>
-          </div>
+          {/* Eight bold uppercase words in a row is not a logo wall, it is a
+              sentence pretending to be one. These are invented companies, so
+              there is no real mark to use and inventing photoreal-looking
+              logos would overstate what this is; each gets a drawn monogram in
+              a bordered cell instead, which is the shape the eye reads as a
+              customer wall without claiming anybody's identity. */}
+          <ul className="wall" aria-label="Customers">
+            {CUSTOMERS.map(c => (
+              <li key={c.name}>
+                <span className="wmark" style={{ '--wc': c.hue } as React.CSSProperties}>
+                  {c.mono}
+                </span>
+                <span className="wname">{c.name}</span>
+              </li>
+            ))}
+          </ul>
         </section>
 
         {/* ── CHAPTERS, alternating with quote bands ───────────── */}
@@ -512,7 +530,7 @@ export default async function Home() {
 
         {/* ── CLOSE ────────────────────────────────────────────── */}
         <section className="band close2">
-          <Store size={22} aria-hidden />
+          <span className="closeico" aria-hidden><MoonStar size={26} /></span>
           <h2 className="h2 big">Sleep on it.</h2>
           <p className="lede center">
             The crawls run at two in the morning either way. You may as well read the
